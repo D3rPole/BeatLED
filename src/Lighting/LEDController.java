@@ -183,7 +183,7 @@ public class LEDController {
             case FLASH -> fixture.flash(lightIDs);
             case FADEOUT -> fixture.fadeout(lightIDs);
             case OTHER -> {
-                
+
             }
         }
         if(event.customData.gradient != null){
