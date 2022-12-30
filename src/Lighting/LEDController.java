@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,9 +40,16 @@ public class LEDController {
 
         String environment = BeatmapPlayer.getInstance().getBeatmap().environmentName;
         Debug.log("environment: " + environment);
-        String path = getClass().getResource("/LightIDTables/" + environment + ".json").getFile();
+        URL resource = getClass().getResource("/LightIDTables/" + environment + ".json");
+        String path;
+        if(resource == null){
+            path = getClass().getResource("/LightIDTables/DefaultEnvironment.json").getFile();
+        }else{
+            path = resource.getFile();
+        }
         path = path.replace("%20"," ");
         File envFile = new File(path);
+        Debug.log(path);
         JSONObject envJson = new JSONObject(Utils.readFile(envFile));
 
         int fixtureCount = envJson.length();
@@ -144,7 +152,7 @@ public class LEDController {
             case FLASH -> fixture.flash();
             case FADEOUT -> fixture.fadeout();
             case OTHER -> {
-                break;
+
             }
         }
         if(event.customData.gradient != null){
@@ -175,7 +183,7 @@ public class LEDController {
             case FLASH -> fixture.flash(lightIDs);
             case FADEOUT -> fixture.fadeout(lightIDs);
             case OTHER -> {
-                break;
+                
             }
         }
         if(event.customData.gradient != null){

@@ -3,10 +3,10 @@ import BeatmapPlayer.BeatmapPlayer;
 public class Main {
 
     public static void main(String[] args) {
-        String path = "C:\\Users\\ikawe\\Desktop\\LED controller\\bs maps\\Centipede";
+        String path = "C:\\Users\\ikawe\\Desktop\\LED controller\\bs maps\\Wallmonger";
 
         BeatmapPlayer player = BeatmapPlayer.getInstance();
         player.load(path);
-        player.play(0);
+        player.play(5);
     }
 }
