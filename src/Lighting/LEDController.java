@@ -21,8 +21,7 @@ import java.util.TimerTask;
 public class LEDController {
     Fixture[] fixtures;
 
-    Device leds1;
-    Device leds2;
+    Device barSides;
     Device shishaTeller;
     Device barLEDs;
 
@@ -30,10 +29,9 @@ public class LEDController {
 
     public LEDController(){
         try {
-            leds1 = new Device("192.168.178.67",65506);
-            leds2 = new Device("192.168.178.76",65506);
-            shishaTeller = new Device("192.168.178.77",65506);
-            barLEDs = new Device("192.168.178.72",65506);
+            barSides = new Device("192.168.178.67",65506);
+            shishaTeller = new Device("192.168.178.72",65506);
+            barLEDs = new Device("192.168.178.76",65506);
         } catch (SocketException | UnknownHostException e) {
             throw new RuntimeException(e);
         }
@@ -82,9 +80,11 @@ public class LEDController {
         thread.start();
     }
 
-    LEDstrip ledStrip = new LEDstrip(300);
-    LEDstrip ledStripBar = new LEDstrip(157);
+    LEDstrip ledStripBarTop = new LEDstrip(157);
     LEDstrip ledStripShisha = new LEDstrip(10);
+
+    LEDstrip ledBarSides = new LEDstrip(357);
+
     void update(){
         if(!BeatmapPlayer.getInstance().songPlayer.isAlive()){
             Debug.log("songplayer dead -> kill thread");
@@ -92,9 +92,9 @@ public class LEDController {
             timerTask.cancel();
             return;
         }
-        ledStrip.clear();
-        ledStripBar.clear();
+        ledStripBarTop.clear();
         ledStripShisha.clear();
+        ledBarSides.clear();
 
         for (int i = 0; i < fixtures.length; i++) {
             fixtures[i].update();
@@ -107,28 +107,24 @@ public class LEDController {
         4: center lights
          */
 
-        fixtures[0].addToStrip(ledStrip,0,16);
-        fixtures[0].addToStrip(ledStrip,300,16, true);
-        fixtures[1].addToStrip(ledStrip,150,30);
-        fixtures[1].addToStrip(ledStrip,149,30,true);
-        fixtures[2].addToStrip(ledStrip,50,80);
-        fixtures[3].addToStrip(ledStrip,250,80);
-        fixtures[4].addToStrip(ledStrip,119,14,true);
-        fixtures[4].addToStrip(ledStrip,180,14);
+        fixtures[4].addToStrip(ledStripShisha,0,10);
 
-        fixtures[1].addToStrip(ledStripShisha,0,10);
-        fixtures[1].addToStrip(ledStripShisha,5,10);
+        fixtures[0].addToStrip(ledStripBarTop,0,30);
+        fixtures[0].addToStrip(ledStripBarTop,157,30,true);
+        fixtures[1].addToStrip(ledStripBarTop,78,48,true);
+        fixtures[1].addToStrip(ledStripBarTop,79,48);
+        fixtures[4].addToStrip(ledStripBarTop,68,20);
 
-        fixtures[0].addToStrip(ledStripBar,0,30);
-        fixtures[0].addToStrip(ledStripBar,157,30,true);
-        fixtures[1].addToStrip(ledStripBar,78,48,true);
-        fixtures[1].addToStrip(ledStripBar,79,48);
+        fixtures[2].addToStrip(ledBarSides,63,120);
+        fixtures[3].addToStrip(ledBarSides,189,120, true);
+        fixtures[0].addToStrip(ledBarSides,252,35);
+        fixtures[4].addToStrip(ledBarSides,287,35);
+        fixtures[0].addToStrip(ledBarSides,322,35);
 
         try {
             shishaTeller.send(ledStripShisha.toByteArray());
-            leds1.send(ledStrip.toByteArray());
-            leds2.send(ledStrip.toByteArray());
-            barLEDs.send(ledStripBar.toByteArray());
+            barSides.send(ledBarSides.toByteArray());
+            barLEDs.send(ledStripBarTop.toByteArray());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

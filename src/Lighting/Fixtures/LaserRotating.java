@@ -22,7 +22,7 @@ public class LaserRotating extends Fixture{
             laserSpeed = Utils.rightLaserSpeed;
         }
 
-        long angle = (new Date().getTime() * laserSpeed / 10)%360;
+        long angle = (new Date().getTime() * laserSpeed / 200)%360;
         double radian = angle / 180.0 * Math.PI;
         int mul = 1;
         if(renderBackwards) mul = -1;
