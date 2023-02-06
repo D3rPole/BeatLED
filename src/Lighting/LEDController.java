@@ -24,6 +24,8 @@ public class LEDController {
     Device barSides;
     Device shishaTeller;
     Device barLEDs;
+    Device bildLEDs;
+
 
     TimerTask timerTask;
 
@@ -32,6 +34,7 @@ public class LEDController {
             barSides = new Device("192.168.178.67",65506);
             shishaTeller = new Device("192.168.178.72",65506);
             barLEDs = new Device("192.168.178.76",65506);
+            bildLEDs = new Device("192.168.178.73",65506);
         } catch (SocketException | UnknownHostException e) {
             throw new RuntimeException(e);
         }
@@ -84,6 +87,7 @@ public class LEDController {
     LEDstrip ledStripShisha = new LEDstrip(10);
 
     LEDstrip ledBarSides = new LEDstrip(357);
+    LEDstrip ledBildSides = new LEDstrip(130);
 
     void update(){
         if(!BeatmapPlayer.getInstance().songPlayer.isAlive()){
@@ -95,6 +99,7 @@ public class LEDController {
         ledStripBarTop.clear();
         ledStripShisha.clear();
         ledBarSides.clear();
+        ledBildSides.clear();
 
         for (int i = 0; i < fixtures.length; i++) {
             fixtures[i].update();
@@ -121,10 +126,17 @@ public class LEDController {
         fixtures[4].addToStrip(ledBarSides,287,35);
         fixtures[0].addToStrip(ledBarSides,322,35);
 
+        fixtures[1].addToStrip(ledBildSides,14,51);
+        fixtures[1].addToStrip(ledBildSides,79,51);
+
+        fixtures[4].addToStrip(ledBildSides,0,14);
+        fixtures[4].addToStrip(ledBildSides,65,14);
+
         try {
             shishaTeller.send(ledStripShisha.toByteArray());
             barSides.send(ledBarSides.toByteArray());
             barLEDs.send(ledStripBarTop.toByteArray());
+            bildLEDs.send(ledBildSides.toByteArray());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

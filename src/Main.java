@@ -3,7 +3,9 @@ import BeatmapPlayer.BeatmapPlayer;
 public class Main {
 
     public static void main(String[] args) {
-        String path = "C:\\Users\\ikawe\\Desktop\\LED controller\\bs maps\\uebok vip";
+        //App ui = new App();
+
+        String path = "C:\\Users\\ikawe\\Desktop\\LED controller\\bs maps\\lord & master";
 
         BeatmapPlayer player = BeatmapPlayer.getInstance();
         player.load(path);
