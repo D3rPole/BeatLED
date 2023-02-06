@@ -6,12 +6,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Beatmap {
-    public ArrayList<BeatmapDiff> diffs = new ArrayList<BeatmapDiff>();
+    public ArrayList<BeatmapDiff> diffs = new ArrayList<>();
     public JSONObject info;
     public String songPath;
     public String path;
     public double BPM;
     public String environmentName  = "DefaultEnvironment";
+
+    public String songName;
+    public String songAuthor;
 
     public Beatmap(String path, JSONObject info){
         Debug.log("Beatmap created");
@@ -22,5 +25,10 @@ public class Beatmap {
     public void addDiff(BeatmapDiff diff){
         diffs.add(diff);
         Debug.log("diff added to Beatmap: " + diff);
+    }
+
+    @Override
+    public String toString() {
+        return "(Beatmap) " + songName + " - " + songAuthor;
     }
 }

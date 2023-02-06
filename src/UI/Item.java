@@ -1,0 +1,36 @@
+package UI;
+
+public class Item {
+    private String path;
+    private String displayedText;
+    public Object obj;
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setDisplayedText(String displayedText) {
+        this.displayedText = displayedText;
+    }
+
+    public void setObj(Object obj) {
+        this.obj = obj;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public Object getObj() {
+        if(obj == null) return null;
+        return obj;
+    }
+
+    @Override
+    public String toString() {
+        if(obj == null){
+            return displayedText;
+        }
+        return obj.toString();
+    }
+}

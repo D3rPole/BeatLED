@@ -9,7 +9,7 @@ public class BeatmapDiff {
     String diffName;
     public double BPM;
     public String path;
-    public ArrayList<LightEvent> events = new ArrayList<LightEvent>();
+    public ArrayList<LightEvent> events = new ArrayList<>();
     public Color colorA = new Color(255,0,0);
     public Color colorB = new Color(0,0,255);
 
@@ -21,5 +21,10 @@ public class BeatmapDiff {
 
     public void addEvent(LightEvent event){
         events.add(event);
+    }
+
+    @Override
+    public String toString() {
+        return diffName;
     }
 }

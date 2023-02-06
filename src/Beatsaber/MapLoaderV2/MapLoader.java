@@ -43,6 +43,8 @@ public class MapLoader {
         Debug.log("_songFilename exists");
         if(!info.has("_beatsPerMinute")) return false;
         beatmap.BPM = info.getDouble("_beatsPerMinute");
+        beatmap.songName = info.getString("_songName");
+        beatmap.songAuthor = info.getString("_songAuthorName");
         Utils.BPM = beatmap.BPM;
         Debug.log("_beatsPerMinute: " + beatmap.BPM);
         if(!info.has("_difficultyBeatmapSets")) return false;
