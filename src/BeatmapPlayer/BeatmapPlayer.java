@@ -41,8 +41,14 @@ public class BeatmapPlayer {
         }
     }
 
+    public void stop(){
+        if(songPlayer == null) return;
+        songPlayer.stop();
+    }
+
     public void play(int difficulty){
         if(initiated){
+            stop();
             songPlayer = new OggPlayer(songPath);
             Utils.difficulty = difficulty;
             BeatmapDiff diff = beatmap.diffs.get(difficulty);

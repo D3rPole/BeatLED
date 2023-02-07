@@ -90,12 +90,6 @@ public class LEDController {
     LEDstrip ledBildSides = new LEDstrip(130);
 
     void update(){
-        if(!BeatmapPlayer.getInstance().songPlayer.isAlive()){
-            Debug.log("songplayer dead -> kill thread");
-            BeatmapPlayer.getInstance().nextEventTask.cancel();
-            timerTask.cancel();
-            return;
-        }
         ledStripBarTop.clear();
         ledStripShisha.clear();
         ledBarSides.clear();
