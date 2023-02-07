@@ -19,11 +19,13 @@ public class MainUI {
     private JScrollPane diffPane;
     private JTextPane infoPane;
     private JList diffList;
+    private JButton play;
+    private JButton stop;
 
     public MainUI(){
         JFrame frame = new JFrame();
         frame.setContentPane(panelMain);
-        frame.setTitle("Main menu");
+        frame.setTitle("BeatLED");
         frame.setSize(800,600);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
