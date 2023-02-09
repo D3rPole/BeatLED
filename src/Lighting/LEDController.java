@@ -1,6 +1,5 @@
 package Lighting;
 
-import BeatmapPlayer.BeatmapPlayer;
 import Beatsaber.LightEvent;
 import Utils.*;
 import Lighting.Fixtures.Fixture;
@@ -29,7 +28,10 @@ public class LEDController {
 
     TimerTask timerTask;
 
+    boolean active = false;
+
     public LEDController(){
+        Debug.log("Creating LEDController");
         try {
             barSides = new Device("192.168.178.67",65506);
             shishaTeller = new Device("192.168.178.72",65506);
@@ -39,7 +41,24 @@ public class LEDController {
             throw new RuntimeException(e);
         }
 
-        String environment = BeatmapPlayer.getInstance().getBeatmap().environmentName;
+        setEnvironment("DefaultEnvironment");
+
+        Runnable task = () -> {
+            Timer timer = new Timer();
+            timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    update();
+                }
+            };
+            timer.schedule(timerTask,0,20);
+        };
+
+        Thread thread = new Thread(task);
+        thread.start();
+    }
+
+    public void setEnvironment(String environment){
         Debug.log("environment: " + environment);
         URL resource = getClass().getResource("/LightIDTables/" + environment + ".json");
         String path;
@@ -67,20 +86,6 @@ public class LEDController {
             fixtures[i].fixtureType = fixtureType;
             Debug.log(fixtures[i]);
         }
-
-        Runnable task = () -> {
-            Timer timer = new Timer();
-            timerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    update();
-                }
-            };
-            timer.schedule(timerTask,0,20);
-        };
-
-        Thread thread = new Thread(task);
-        thread.start();
     }
 
     LEDstrip ledStripBarTop = new LEDstrip(157);
@@ -89,15 +94,17 @@ public class LEDController {
     LEDstrip ledBarSides = new LEDstrip(357);
     LEDstrip ledBildSides = new LEDstrip(130);
 
-    void update(){
-        ledStripBarTop.clear();
-        ledStripShisha.clear();
-        ledBarSides.clear();
-        ledBildSides.clear();
 
-        for (int i = 0; i < fixtures.length; i++) {
-            fixtures[i].update();
-        }
+    void update(){
+        if(active) {
+            ledStripBarTop.clear();
+            ledStripShisha.clear();
+            ledBarSides.clear();
+            ledBildSides.clear();
+
+            for (int i = 0; i < fixtures.length; i++) {
+                fixtures[i].update();
+            }
         /*
         0: backlights
         1: ring
@@ -106,33 +113,34 @@ public class LEDController {
         4: center lights
          */
 
-        fixtures[4].addToStrip(ledStripShisha,0,10);
+            fixtures[4].addToStrip(ledStripShisha, 0, 10);
 
-        fixtures[0].addToStrip(ledStripBarTop,0,30);
-        fixtures[0].addToStrip(ledStripBarTop,157,30,true);
-        fixtures[1].addToStrip(ledStripBarTop,78,48,true);
-        fixtures[1].addToStrip(ledStripBarTop,79,48);
-        fixtures[4].addToStrip(ledStripBarTop,68,20);
+            fixtures[0].addToStrip(ledStripBarTop, 0, 30);
+            fixtures[0].addToStrip(ledStripBarTop, 157, 30, true);
+            fixtures[1].addToStrip(ledStripBarTop, 78, 48, true);
+            fixtures[1].addToStrip(ledStripBarTop, 79, 48);
+            fixtures[4].addToStrip(ledStripBarTop, 68, 20);
 
-        fixtures[2].addToStrip(ledBarSides,63,120);
-        fixtures[3].addToStrip(ledBarSides,189,120, true);
-        fixtures[0].addToStrip(ledBarSides,252,35);
-        fixtures[4].addToStrip(ledBarSides,287,35);
-        fixtures[0].addToStrip(ledBarSides,322,35);
+            fixtures[2].addToStrip(ledBarSides, 63, 120);
+            fixtures[3].addToStrip(ledBarSides, 189, 120, true);
+            fixtures[0].addToStrip(ledBarSides, 252, 35);
+            fixtures[4].addToStrip(ledBarSides, 287, 35);
+            fixtures[0].addToStrip(ledBarSides, 322, 35);
 
-        fixtures[1].addToStrip(ledBildSides,14,51);
-        fixtures[1].addToStrip(ledBildSides,79,51);
+            fixtures[1].addToStrip(ledBildSides, 14, 51);
+            fixtures[1].addToStrip(ledBildSides, 79, 51);
 
-        fixtures[4].addToStrip(ledBildSides,0,14);
-        fixtures[4].addToStrip(ledBildSides,65,14);
+            fixtures[4].addToStrip(ledBildSides, 0, 14);
+            fixtures[4].addToStrip(ledBildSides, 65, 14);
 
-        try {
-            shishaTeller.send(ledStripShisha.toByteArray());
-            barSides.send(ledBarSides.toByteArray());
-            barLEDs.send(ledStripBarTop.toByteArray());
-            bildLEDs.send(ledBildSides.toByteArray());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            try {
+                shishaTeller.send(ledStripShisha.toByteArray());
+                barSides.send(ledBarSides.toByteArray());
+                barLEDs.send(ledStripBarTop.toByteArray());
+                bildLEDs.send(ledBildSides.toByteArray());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -145,6 +153,7 @@ public class LEDController {
         }else{
             lightID(event);
         }
+        Utils.ui.log(event);
     }
     void all(LightEvent event){
         Fixture fixture = fixtures[event.type];
@@ -205,5 +214,14 @@ public class LEDController {
         }else{
             fixture.setColor(lightIDs, Utils.colorB);
         }
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+        Utils.ui.setActive(active);
     }
 }

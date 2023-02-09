@@ -5,7 +5,6 @@ import Beatsaber.LightEvent;
 import Beatsaber.MapLoader;
 import Beatsaber.MapLoaderV2.DiffParser;
 import Utils.Debug;
-import Lighting.LEDController;
 import Utils.Utils;
 
 import java.util.*;
@@ -24,10 +23,6 @@ public class BeatmapPlayer {
         return instance;
     }
 
-    public Beatmap getBeatmap() {
-        return beatmap;
-    }
-
     public void load(String path){
         Debug.log("loading Beatmap...");
         MapLoader mapLoader = new MapLoader();
@@ -44,6 +39,7 @@ public class BeatmapPlayer {
     public void stop(){
         if(songPlayer == null) return;
         songPlayer.stop();
+        Utils.ledController.setActive(false);
     }
 
     public void play(int difficulty){
@@ -57,7 +53,8 @@ public class BeatmapPlayer {
             Utils.colorA = diff.colorA;
             Utils.colorB = diff.colorB;
             songPlayer.start();
-            Utils.ledController = new LEDController();
+            Utils.ledController.setEnvironment(beatmap.environmentName);
+            Utils.ledController.setActive(true);
             playEvents(diff,0.0);
             Debug.log("Playing Audioclip");
         }else{
@@ -69,7 +66,7 @@ public class BeatmapPlayer {
         Date date = new Date();
         timeA = date.getTime();
         Debug.log("Playing LightEvents");
-        ArrayList<LightEvent> events = new ArrayList<LightEvent>(diff.events);
+        ArrayList<LightEvent> events = new ArrayList<>(diff.events);
         LightEvent event;
         if(events.size() == 0) {Debug.log("no events"); return;}
         do{
@@ -83,8 +80,7 @@ public class BeatmapPlayer {
 
     public void nextEvent(ArrayList<LightEvent> events){
         if(!BeatmapPlayer.getInstance().songPlayer.isAlive()){
-            Debug.log("songplayer dead -> kill thread");
-            throw new RuntimeException("i am dead");
+            return;
         }
         if(events.size() > 0){
             LightEvent event = events.get(0);
@@ -106,7 +102,7 @@ public class BeatmapPlayer {
                 }
             };
 
-            timer.schedule(nextEventTask,  Math.max(0,(long)(time)));
+            timer.schedule(nextEventTask,  Math.max(0, time));
         }else Debug.log("no events");
     }
 }

@@ -2,12 +2,14 @@ package Utils;
 
 import Lighting.Color;
 import Lighting.LEDController;
+import UI.MainUI;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Utils {
+    public static MainUI ui;
     public static LEDController ledController;
     public static int leftLaserSpeed;
     public static int rightLaserSpeed;

@@ -5,14 +5,16 @@ import Beatsaber.Beatmap;
 import Beatsaber.BeatmapDiff;
 import Beatsaber.MapLoader;
 import Utils.Config;
+import Utils.Utils;
 
 import javax.swing.*;
 import javax.swing.text.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
-public class MainUI {
+public class MainUI extends Component {
     private JPanel panelMain;
     private JList songlistList;
     private JScrollPane songlistPane;
@@ -21,19 +23,31 @@ public class MainUI {
     private JList diffList;
     private JButton play;
     private JButton stop;
+    private JPanel ledController;
+    private JCheckBox activeLEDController;
+    private JTextPane logs;
+    private JScrollPane logScroll;
+    private JPanel songList;
+    private JPanel info;
 
     public MainUI(){
         JFrame frame = new JFrame();
         frame.setContentPane(panelMain);
         frame.setTitle("BeatLED");
-        frame.setSize(800,600);
+        frame.setSize(1200,600);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
+        activeLEDController.addActionListener(e -> Utils.ledController.setActive(activeLEDController.isSelected()));
+
+        stop.addActionListener(e -> BeatmapPlayer.getInstance().stop());
 
         loadBeatmapList(Config.beatmapFolder);
     }
 
+    public void setActive(boolean active){
+        activeLEDController.setSelected(active);
+    }
     void loadBeatmapList(String path){
         File directoryPath = new File(path);
         String[] directoryList = directoryPath.list();
@@ -58,6 +72,20 @@ public class MainUI {
 
         songlistList.setListData(items);
         songlistList.addMouseListener(mouseAdapter);
+    }
+
+    public void log(Object o){
+        StyledDocument doc = logs.getStyledDocument();
+        try {
+            String str = "\n";
+            if(o == null) str += "null";
+            else str += o.toString();
+            doc.insertString(doc.getLength(), str, doc.getStyle(""));
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
+        JScrollBar bar = logScroll.getVerticalScrollBar();
+        bar.setValue(bar.getMaximum());
     }
 
     void fillInfo(Beatmap beatmap){

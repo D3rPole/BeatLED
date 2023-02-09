@@ -1,9 +1,14 @@
 
+import Lighting.LEDController;
 import UI.MainUI;
+import Utils.Utils;
+import com.formdev.flatlaf.FlatDarculaLaf;
 
 public class Main {
 
     public static void main(String[] args) {
-        MainUI ui = new MainUI();
+        FlatDarculaLaf.setup();
+        Utils.ui = new MainUI();
+        Utils.ledController = new LEDController();
     }
 }
