@@ -1,4 +1,4 @@
-package Lighting;
+package Lighting.Components;
 
 public class LEDstrip {
     LED[] strip;

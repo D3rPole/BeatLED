@@ -3,7 +3,7 @@ package Beatsaber.MapLoaderV2;
 import Beatsaber.Beatmap;
 import Beatsaber.BeatmapDiff;
 import Utils.*;
-import Lighting.Color;
+import Lighting.Components.Color;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

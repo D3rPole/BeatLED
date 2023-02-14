@@ -1,11 +1,10 @@
 package Beatsaber;
 
-import Lighting.Color;
-import Lighting.ColorGradient;
+import Lighting.Components.Color;
+import Lighting.Components.ColorGradient;
 import Utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import Utils.*;
 
 public class CustomData {
     public boolean lockPosition;

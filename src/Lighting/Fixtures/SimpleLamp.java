@@ -1,6 +1,6 @@
 package Lighting.Fixtures;
 
-import Lighting.LEDstrip;
+import Lighting.Components.LEDstrip;
 
 public class SimpleLamp extends Fixture{
     public SimpleLamp(int numberLamps) {

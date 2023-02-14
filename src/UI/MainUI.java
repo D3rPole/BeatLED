@@ -29,12 +29,16 @@ public class MainUI extends Component {
     private JScrollPane logScroll;
     private JPanel songList;
     private JPanel info;
+    private JButton settingsButton;
+    private JButton reloadList;
+    private JButton clearLogsButton;
 
     public MainUI(){
         JFrame frame = new JFrame();
         frame.setContentPane(panelMain);
         frame.setTitle("BeatLED");
         frame.setSize(1200,600);
+        frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
@@ -42,7 +46,24 @@ public class MainUI extends Component {
 
         stop.addActionListener(e -> BeatmapPlayer.getInstance().stop());
 
+        settingsButton.addActionListener(e -> {
+            Settings settings = new Settings();
+        });
+
         loadBeatmapList(Config.beatmapFolder);
+
+        reloadList.addActionListener(e -> {
+            loadBeatmapList(Config.beatmapFolder);
+        });
+
+        clearLogsButton.addActionListener(e -> {
+            StyledDocument doc = logs.getStyledDocument();
+            try {
+                doc.remove(0,doc.getLength());
+            } catch (BadLocationException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
     }
 
     public void setActive(boolean active){
@@ -50,6 +71,16 @@ public class MainUI extends Component {
     }
     void loadBeatmapList(String path){
         File directoryPath = new File(path);
+        if(!directoryPath.exists()){
+            Item[] item = new Item[2];
+            item[0] = new Item();
+            item[0].setDisplayedText("-------------> invalid folder <-------------");
+            item[1] = new Item();
+            item[1].setDisplayedText("  !!!Change beatmap folder in settings!!!");
+            songlistList.setListData(item);
+            return;
+        }
+
         String[] directoryList = directoryPath.list();
         Item[] items = new Item[directoryList.length + 1];
 
@@ -59,8 +90,7 @@ public class MainUI extends Component {
 
         for (int i = 0; i < directoryList.length; i++) {
             Item item = new Item();
-            item.setPath(path + directoryList[i]);
-            File file = new File(item.getPath());
+            item.setPath(path + "\\" + directoryList[i]);
             MapLoader loader = new MapLoader();
             if(loader.load(item.getPath())){
                 item.setObj(loader.getBeatmap());

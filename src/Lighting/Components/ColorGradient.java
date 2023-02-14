@@ -1,4 +1,4 @@
-package Lighting;
+package Lighting.Components;
 import java.util.Date;
 
 public class ColorGradient {

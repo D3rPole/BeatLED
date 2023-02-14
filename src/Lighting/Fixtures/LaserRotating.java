@@ -1,6 +1,6 @@
 package Lighting.Fixtures;
 
-import Lighting.LEDstrip;
+import Lighting.Components.LEDstrip;
 import Utils.Utils;
 
 import java.util.Date;

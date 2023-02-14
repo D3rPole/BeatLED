@@ -2,7 +2,7 @@ package Beatsaber;
 
 import Utils.Config;
 import org.json.JSONObject;
-import Lighting.Color;
+import Lighting.Components.Color;
 
 public class LightEvent {
     public long time;

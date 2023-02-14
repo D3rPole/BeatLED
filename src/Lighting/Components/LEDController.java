@@ -1,4 +1,4 @@
-package Lighting;
+package Lighting.Components;
 
 import Beatsaber.LightEvent;
 import Utils.*;

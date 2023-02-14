@@ -1,7 +1,7 @@
 package Beatsaber;
 
 import Utils.Debug;
-import Lighting.Color;
+import Lighting.Components.Color;
 
 import java.util.ArrayList;
 

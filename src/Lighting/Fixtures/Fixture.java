@@ -1,9 +1,9 @@
 package Lighting.Fixtures;
 
-import Lighting.Color;
-import Lighting.ColorGradient;
-import Lighting.LEDstrip;
-import Lighting.Light;
+import Lighting.Components.Color;
+import Lighting.Components.ColorGradient;
+import Lighting.Components.LEDstrip;
+import Lighting.Components.Light;
 
 public abstract class Fixture {
     public Light[] lights;

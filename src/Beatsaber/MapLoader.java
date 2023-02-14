@@ -13,9 +13,9 @@ public class MapLoader {
         Debug.log("Loading map: " + path);
         if (path.equals("")) return false;
         this.path = path;
+        Debug.log("    " + path);
         File file = new File(path);
         if (!file.exists()) return false;
-        //Load info.dat and verify
         File info = new File(path + "\\info.dat");
         if (!info.exists()) {
             info = new File(path + "\\Info.dat");

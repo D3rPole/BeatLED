@@ -1,4 +1,4 @@
-package Lighting;
+package Lighting.Components;
 
 public class LED {
     Color color = new Color();

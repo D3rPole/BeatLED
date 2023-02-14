@@ -1,8 +1,6 @@
 package Lighting.Fixtures;
 
-import Lighting.LEDstrip;
-
-import java.util.Date;
+import Lighting.Components.LEDstrip;
 
 public class RingRotating extends Fixture{
 

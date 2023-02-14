@@ -1,7 +1,7 @@
 package Utils;
 
-import Lighting.Color;
-import Lighting.LEDController;
+import Lighting.Components.Color;
+import Lighting.Components.LEDController;
 import UI.MainUI;
 
 import java.io.File;

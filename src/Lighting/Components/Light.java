@@ -1,4 +1,4 @@
-package Lighting;
+package Lighting.Components;
 import Utils.Config;
 
 import java.util.Date;

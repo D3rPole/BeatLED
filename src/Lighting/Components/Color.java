@@ -1,7 +1,6 @@
-package Lighting;
+package Lighting.Components;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class Color {
     int r = 0;
