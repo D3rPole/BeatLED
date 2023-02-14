@@ -21,7 +21,7 @@ public class Settings {
         frame.setContentPane(settingsPanel);
         frame.setTitle("BeatLED | Settings");
         frame.setSize(600,400);
-        frame.setLocation(getPointerInfo().getLocation());
+        frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
 

@@ -34,10 +34,35 @@ public class LEDController {
 
     public LEDController(){
         Debug.log("Creating LEDController");
-        devices = new DeviceLED[1];
+        devices = new DeviceLED[5];
         try {
             devices[0] = new DeviceLED("192.168.178.77",65506,100);
+            devices[1] = new DeviceLED("192.168.178.76",65506,157); //bar top
+            devices[2] = new DeviceLED("192.168.178.72",65506,10); //shisha
+            devices[3] = new DeviceLED("192.168.178.67",65506,357); //bar center
+            devices[4] = new DeviceLED("192.168.178.73",65506,130); // picture
+
             devices[0].addEffect(Effect.effect.CENTER_LIGHTS.ordinal(),20,22,false);
+
+            devices[1].addEffect(0,0,30,false);
+            devices[1].addEffect(0,127,30,true);
+            devices[1].addEffect(1,78,48,true);
+            devices[1].addEffect(1,79,48,false);
+            devices[1].addEffect(4,68,20,false);
+
+            devices[2].addEffect(Effect.effect.BACK_LIGHTS.ordinal(),0,10,false);
+
+            devices[3].addEffect(2,63,120,false);
+            devices[3].addEffect(3,189,120,true);
+            devices[4].addEffect(Effect.effect.CENTER_LIGHTS.ordinal(), 0,130,false);
+
+            /*
+            0: backlights
+            1: ring
+            2: left laser
+            3: right laser
+            4: center lights
+             */
             /*barSides = new Device("192.168.178.67",65506);
             shishaTeller = new Device("192.168.178.72",65506);
             barLEDs = new Device("192.168.178.76",65506);

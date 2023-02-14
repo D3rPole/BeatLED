@@ -2,9 +2,11 @@ package UI;
 
 import Beatsaber.Beatmap;
 import Beatsaber.BeatmapDiff;
+import Beatsaber.LightEvent;
 import Beatsaber.MapLoader;
 import Utils.Config;
 import Utils.Utils;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -64,6 +66,17 @@ public class MainUI extends Component {
 
         typeComboBox.addItem(new Item("Boost lights",5));
 
+        actionComboBox.addItem(new Item("0",0));
+        actionComboBox.addItem(new Item("1",1));
+        actionComboBox.addItem(new Item("2",2));
+        actionComboBox.addItem(new Item("3",3));
+        actionComboBox.addItem(new Item("4",4));
+        actionComboBox.addItem(new Item("5",5));
+        actionComboBox.addItem(new Item("6",6));
+        actionComboBox.addItem(new Item("7",7));
+        actionComboBox.addItem(new Item("8",8));
+        actionComboBox.addItem(new Item("9",9));
+
 
         activeLEDControllerCheckbox.addActionListener(e -> {
             Utils.ledController.setActive(activeLEDControllerCheckbox.isSelected());
@@ -92,8 +105,11 @@ public class MainUI extends Component {
         });
 
         sendCommandButton.addActionListener(e -> {
-
+            LightEvent event = new LightEvent(0, actionComboBox.getSelectedIndex(),typeComboBox.getSelectedIndex(), new JSONObject());
+            Utils.ledController.lightEvent(event);
         });
+
+        hardwareSetupButton.addActionListener(e -> new HardwareSetup());
     }
 
     void setEnabledRecursive(Component c, boolean enabled) {

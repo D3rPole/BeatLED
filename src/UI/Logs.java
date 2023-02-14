@@ -19,7 +19,7 @@ public class Logs {
         frame.setContentPane(logPanel);
         frame.setTitle("BeatLED | Event logs");
         frame.setSize(800,600);
-        frame.setLocation(getPointerInfo().getLocation());
+        frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
 

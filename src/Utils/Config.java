@@ -1,5 +1,9 @@
 package Utils;
 
+import Lighting.DeviceLED;
+import networking.Device;
+
+import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
 public class Config {
@@ -8,6 +12,8 @@ public class Config {
     public static int flashTime = 250;
     public static int onBrightness = 70;
     public static String beatmapFolder = "C:\\Users\\ikawe\\Desktop\\LED controller\\bs maps\\";
+
+    ArrayList<DeviceLED> Devices = new ArrayList<>();
 
     public static void save(){
         Preferences prefs = Preferences.userNodeForPackage(Config.class);
