@@ -1,6 +1,8 @@
 package Lighting.Components;
 
 import Beatsaber.LightEvent;
+import Lighting.DeviceLED;
+import Lighting.Effect;
 import Utils.*;
 import Lighting.Fixtures.Fixture;
 import Lighting.Fixtures.LaserRotating;
@@ -10,7 +12,6 @@ import networking.Device;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -20,11 +21,12 @@ import java.util.TimerTask;
 public class LEDController {
     Fixture[] fixtures;
 
-    Device barSides;
+    /*Device barSides;
     Device shishaTeller;
     Device barLEDs;
-    Device bildLEDs;
+    Device bildLEDs;*/
 
+    DeviceLED[] devices;
 
     TimerTask timerTask;
 
@@ -32,11 +34,14 @@ public class LEDController {
 
     public LEDController(){
         Debug.log("Creating LEDController");
+        devices = new DeviceLED[1];
         try {
-            barSides = new Device("192.168.178.67",65506);
+            devices[0] = new DeviceLED("192.168.178.77",65506,100);
+            devices[0].addEffect(Effect.effect.CENTER_LIGHTS.ordinal(),20,22,false);
+            /*barSides = new Device("192.168.178.67",65506);
             shishaTeller = new Device("192.168.178.72",65506);
             barLEDs = new Device("192.168.178.76",65506);
-            bildLEDs = new Device("192.168.178.73",65506);
+            bildLEDs = new Device("192.168.178.73",65506);*/
         } catch (SocketException | UnknownHostException e) {
             throw new RuntimeException(e);
         }
@@ -88,19 +93,19 @@ public class LEDController {
         }
     }
 
-    LEDstrip ledStripBarTop = new LEDstrip(157);
+    /*LEDstrip ledStripBarTop = new LEDstrip(157);
     LEDstrip ledStripShisha = new LEDstrip(10);
 
     LEDstrip ledBarSides = new LEDstrip(357);
-    LEDstrip ledBildSides = new LEDstrip(130);
+    LEDstrip ledBildSides = new LEDstrip(130);*/
 
 
     void update(){
         if(active) {
-            ledStripBarTop.clear();
+            /*ledStripBarTop.clear();
             ledStripShisha.clear();
             ledBarSides.clear();
-            ledBildSides.clear();
+            ledBildSides.clear();*/
 
             for (int i = 0; i < fixtures.length; i++) {
                 fixtures[i].update();
@@ -113,7 +118,7 @@ public class LEDController {
         4: center lights
          */
 
-            fixtures[4].addToStrip(ledStripShisha, 0, 10);
+            /*fixtures[4].addToStrip(ledStripShisha, 0, 10);
 
             fixtures[0].addToStrip(ledStripBarTop, 0, 30);
             fixtures[0].addToStrip(ledStripBarTop, 157, 30, true);
@@ -131,16 +136,19 @@ public class LEDController {
             fixtures[1].addToStrip(ledBildSides, 79, 51);
 
             fixtures[4].addToStrip(ledBildSides, 0, 14);
-            fixtures[4].addToStrip(ledBildSides, 65, 14);
+            fixtures[4].addToStrip(ledBildSides, 65, 14);*/
 
-            try {
+            for (int i = 0; i < devices.length; i++) {
+                devices[i].applyEffects(fixtures);
+            }
+            /*try {
                 shishaTeller.send(ledStripShisha.toByteArray());
                 barSides.send(ledBarSides.toByteArray());
                 barLEDs.send(ledStripBarTop.toByteArray());
                 bildLEDs.send(ledBildSides.toByteArray());
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
+            }*/
         }
     }
 

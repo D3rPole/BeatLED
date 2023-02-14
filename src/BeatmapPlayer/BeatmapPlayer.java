@@ -17,12 +17,6 @@ public class BeatmapPlayer {
 
     long timeA;
 
-    static BeatmapPlayer instance = new BeatmapPlayer();
-
-    public static BeatmapPlayer getInstance() {
-        return instance;
-    }
-
     public void load(String path){
         Debug.log("loading Beatmap...");
         MapLoader mapLoader = new MapLoader();
@@ -79,7 +73,7 @@ public class BeatmapPlayer {
     public TimerTask nextEventTask;
 
     public void nextEvent(ArrayList<LightEvent> events){
-        if(!BeatmapPlayer.getInstance().songPlayer.isAlive()){
+        if(!this.songPlayer.isAlive()){
             return;
         }
         if(events.size() > 0){

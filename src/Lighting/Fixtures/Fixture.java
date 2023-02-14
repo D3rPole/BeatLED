@@ -104,8 +104,8 @@ public abstract class Fixture {
         }
     }
 
-    public void addToStrip(LEDstrip ledStrip, int position, int size){
-        addToStrip(ledStrip,position,size,false);
+    public void addToStrip(LEDstrip ledStrip, int fromIndex, int toIndex){
+        addToStrip(ledStrip,fromIndex,toIndex,false);
     }
-    public abstract void addToStrip(LEDstrip ledStrip, int position, int size, boolean renderBackwards);
+    public abstract void addToStrip(LEDstrip ledStrip, int fromIndex, int toIndex, boolean reversed);
 }

@@ -1,5 +1,6 @@
 package Utils;
 
+import BeatmapPlayer.BeatmapPlayer;
 import Lighting.Components.Color;
 import Lighting.Components.LEDController;
 import UI.MainUI;
@@ -11,6 +12,7 @@ import java.util.Scanner;
 public class Utils {
     public static MainUI ui;
     public static LEDController ledController;
+    public static BeatmapPlayer beatmapPlayer;
     public static int leftLaserSpeed;
     public static int rightLaserSpeed;
     public static Color colorA = new Color(255,0,0);

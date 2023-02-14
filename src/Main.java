@@ -1,4 +1,5 @@
 
+import BeatmapPlayer.BeatmapPlayer;
 import Lighting.Components.LEDController;
 import UI.MainUI;
 import Utils.Utils;
@@ -11,6 +12,7 @@ public class Main {
         Config.load();
         FlatDarculaLaf.setup();
         Utils.ui = new MainUI();
+        Utils.beatmapPlayer = new BeatmapPlayer();
         Utils.ledController = new LEDController();
     }
 }

@@ -5,6 +5,11 @@ public class Item {
     private String displayedText;
     public Object obj;
 
+    Item(){}
+    Item(String displayedText, Object obj){
+        this.displayedText = displayedText;
+        this.obj = obj;
+    }
     public void setPath(String path) {
         this.path = path;
     }
@@ -28,7 +33,7 @@ public class Item {
 
     @Override
     public String toString() {
-        if(obj == null){
+        if(obj == null || displayedText != null){
             return displayedText;
         }
         return obj.toString();

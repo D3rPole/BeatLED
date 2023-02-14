@@ -1,6 +1,5 @@
 package UI;
 
-import BeatmapPlayer.BeatmapPlayer;
 import Beatsaber.Beatmap;
 import Beatsaber.BeatmapDiff;
 import Beatsaber.MapLoader;
@@ -16,22 +15,30 @@ import java.io.File;
 
 public class MainUI extends Component {
     private JPanel panelMain;
-    private JList songlistList;
+    private JList<Item> songlistList;
     private JScrollPane songlistPane;
     private JScrollPane diffPane;
     private JTextPane infoPane;
-    private JList diffList;
-    private JButton play;
-    private JButton stop;
-    private JPanel ledController;
-    private JCheckBox activeLEDController;
-    private JTextPane logs;
-    private JScrollPane logScroll;
-    private JPanel songList;
-    private JPanel info;
+    private JList<BeatmapDiff> diffList;
+    private JButton playButton;
+    private JButton stopButton;
+    private JPanel ledControllerPanel;
+    private JCheckBox activeLEDControllerCheckbox;
+    private JPanel songListPanel;
+    private JPanel infoPanel;
     private JButton settingsButton;
-    private JButton reloadList;
-    private JButton clearLogsButton;
+    private JButton reloadListButton;
+    private JButton openLogsButton;
+    private JCheckBox manualControlCheckBox;
+    private JComboBox<Item> typeComboBox;
+    private JComboBox actionComboBox;
+    private JSpinner redSpinner;
+    private JSpinner blueSpinner;
+    private JSpinner greenSpinner;
+    private JButton sendCommandButton;
+    private JButton hardwareSetupButton;
+    private JPanel manualControlsPanel;
+    private Logs logWindow;
 
     public MainUI(){
         JFrame frame = new JFrame();
@@ -42,32 +49,65 @@ public class MainUI extends Component {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
-        activeLEDController.addActionListener(e -> Utils.ledController.setActive(activeLEDController.isSelected()));
+        setEnabledRecursive(manualControlsPanel,false);
+        typeComboBox.addItem(new Item("Back lights",0));
+        typeComboBox.addItem(new Item("Ring lights",1));
+        typeComboBox.addItem(new Item("Left laser",2));
+        typeComboBox.addItem(new Item("Right laser",3));
+        typeComboBox.addItem(new Item("Center lights",4));
 
-        stop.addActionListener(e -> BeatmapPlayer.getInstance().stop());
+        typeComboBox.addItem(new Item("Ring rotation",8));
+        typeComboBox.addItem(new Item("Ring zoom",9));
 
-        settingsButton.addActionListener(e -> {
-            Settings settings = new Settings();
+        typeComboBox.addItem(new Item("Left laser speed",12));
+        typeComboBox.addItem(new Item("Right laser speed",13));
+
+        typeComboBox.addItem(new Item("Boost lights",5));
+
+
+        activeLEDControllerCheckbox.addActionListener(e -> {
+            Utils.ledController.setActive(activeLEDControllerCheckbox.isSelected());
+            if(!activeLEDControllerCheckbox.isSelected() && manualControlCheckBox.isSelected()){
+                manualControlCheckBox.doClick();
+            }
         });
+
+        stopButton.addActionListener(e -> Utils.beatmapPlayer.stop());
+
+        settingsButton.addActionListener(e -> new Settings());
+
+        openLogsButton.addActionListener(e -> logWindow = new Logs());
 
         loadBeatmapList(Config.beatmapFolder);
 
-        reloadList.addActionListener(e -> {
+        reloadListButton.addActionListener(e -> {
             loadBeatmapList(Config.beatmapFolder);
         });
 
-        clearLogsButton.addActionListener(e -> {
-            StyledDocument doc = logs.getStyledDocument();
-            try {
-                doc.remove(0,doc.getLength());
-            } catch (BadLocationException ex) {
-                throw new RuntimeException(ex);
+        manualControlCheckBox.addActionListener(e -> {
+            setEnabledRecursive(manualControlsPanel,manualControlCheckBox.isSelected());
+            if(manualControlCheckBox.isSelected() && !activeLEDControllerCheckbox.isSelected()){
+                activeLEDControllerCheckbox.doClick();
             }
+        });
+
+        sendCommandButton.addActionListener(e -> {
+
         });
     }
 
+    void setEnabledRecursive(Component c, boolean enabled) {
+        c.setEnabled(enabled);
+        if (c instanceof Container) {
+            Component[] components = ((Container) c).getComponents();
+            for (Component child : components) {
+                setEnabledRecursive(child, enabled);
+            }
+        }
+    }
+
     public void setActive(boolean active){
-        activeLEDController.setSelected(active);
+        activeLEDControllerCheckbox.setSelected(active);
     }
     void loadBeatmapList(String path){
         File directoryPath = new File(path);
@@ -82,6 +122,7 @@ public class MainUI extends Component {
         }
 
         String[] directoryList = directoryPath.list();
+        assert directoryList != null;
         Item[] items = new Item[directoryList.length + 1];
 
         items[0] = new Item();
@@ -105,17 +146,10 @@ public class MainUI extends Component {
     }
 
     public void log(Object o){
-        StyledDocument doc = logs.getStyledDocument();
-        try {
-            String str = "\n";
-            if(o == null) str += "null";
-            else str += o.toString();
-            doc.insertString(doc.getLength(), str, doc.getStyle(""));
-        } catch (BadLocationException e) {
-            throw new RuntimeException(e);
-        }
-        JScrollBar bar = logScroll.getVerticalScrollBar();
-        bar.setValue(bar.getMaximum());
+        if(logWindow == null) return;
+        if(!logWindow.isOpen()) return;
+
+        logWindow.log(o);
     }
 
     void fillInfo(Beatmap beatmap){
@@ -139,9 +173,8 @@ public class MainUI extends Component {
             JList list = (JList)e.getSource();
             if (e.getClickCount() == 2) {
                 int index = list.getSelectedIndex();
-                BeatmapPlayer player = BeatmapPlayer.getInstance();
-                player.load(selected.path);
-                player.play(index);
+                Utils.beatmapPlayer.load(selected.path);
+                Utils.beatmapPlayer.play(index);
             }
         }
     };
@@ -149,17 +182,17 @@ public class MainUI extends Component {
     MouseAdapter mouseAdapter = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
-            JList list = (JList)e.getSource();
-            if (e.getClickCount() == 2) {
-                Item item = (Item) list.getSelectedValue();
-                if(item == null) return;
-                if(item.obj==null){
-                    loadBeatmapList(item.getPath());
-                }else{
-                    fillInfo((Beatmap) item.getObj());
-                    selected = (Beatmap) item.getObj();
-                }
+        JList list = (JList)e.getSource();
+        if (e.getClickCount() == 2) {
+            Item item = (Item) list.getSelectedValue();
+            if(item == null) return;
+            if(item.obj==null){
+                loadBeatmapList(item.getPath());
+            }else{
+                fillInfo((Beatmap) item.getObj());
+                selected = (Beatmap) item.getObj();
             }
+        }
         }
     };
 }
