@@ -1,9 +1,14 @@
 package Utils;
 
 import Lighting.DeviceLED;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import networking.Device;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
 public class Config {
@@ -12,10 +17,12 @@ public class Config {
     public static int flashTime = 250;
     public static int onBrightness = 70;
     public static String beatmapFolder = "C:\\Users\\ikawe\\Desktop\\LED controller\\bs maps\\";
+    public static int defaultPort = 65506;
 
-    ArrayList<DeviceLED> Devices = new ArrayList<>();
+    public static ArrayList<DeviceLED> devices = new ArrayList<>();
 
     public static void save(){
+        Debug.log("Saving config");
         Preferences prefs = Preferences.userNodeForPackage(Config.class);
 
         prefs.put("beatmapFolderPath", beatmapFolder);
@@ -23,15 +30,36 @@ public class Config {
         prefs.put("flashTime", String.valueOf(flashTime));
         prefs.put("onBrightness", String.valueOf(onBrightness));
 
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String json = mapper.writeValueAsString(devices);
+            prefs.put("devices", json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public static void load(){
+        Debug.log("loading Config");
         Preferences prefs = Preferences.userNodeForPackage(Config.class);
 
         beatmapFolder = prefs.get("beatmapFolderPath", "");
         fadeoutTime = Integer.parseInt(prefs.get("fadeoutTime", "500"));
         flashTime = Integer.parseInt(prefs.get("flashTime", "250"));
         onBrightness = Integer.parseInt(prefs.get("onBrightness", "70"));
+        String json = prefs.get("devices", "");
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            devices = mapper.readValue(json, new TypeReference<ArrayList<DeviceLED>>(){});
+            for(DeviceLED device : devices){
+                Debug.log("    " + device);
+                device.init();
+            }
+
+        } catch (JsonProcessingException e) {
+            Debug.log(e);
+        }
     }
 
 }

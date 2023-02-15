@@ -51,7 +51,7 @@ public class MainUI extends Component {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
-        setEnabledRecursive(manualControlsPanel,false);
+        Utils.setEnabledRecursive(manualControlsPanel,false);
         typeComboBox.addItem(new Item("Back lights",0));
         typeComboBox.addItem(new Item("Ring lights",1));
         typeComboBox.addItem(new Item("Left laser",2));
@@ -98,7 +98,7 @@ public class MainUI extends Component {
         });
 
         manualControlCheckBox.addActionListener(e -> {
-            setEnabledRecursive(manualControlsPanel,manualControlCheckBox.isSelected());
+            Utils.setEnabledRecursive(manualControlsPanel,manualControlCheckBox.isSelected());
             if(manualControlCheckBox.isSelected() && !activeLEDControllerCheckbox.isSelected()){
                 activeLEDControllerCheckbox.doClick();
             }
@@ -110,16 +110,6 @@ public class MainUI extends Component {
         });
 
         hardwareSetupButton.addActionListener(e -> new HardwareSetup());
-    }
-
-    void setEnabledRecursive(Component c, boolean enabled) {
-        c.setEnabled(enabled);
-        if (c instanceof Container) {
-            Component[] components = ((Container) c).getComponents();
-            for (Component child : components) {
-                setEnabledRecursive(child, enabled);
-            }
-        }
     }
 
     public void setActive(boolean active){
@@ -198,17 +188,16 @@ public class MainUI extends Component {
     MouseAdapter mouseAdapter = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
-        JList list = (JList)e.getSource();
-        if (e.getClickCount() == 2) {
+            JList list = (JList)e.getSource();
             Item item = (Item) list.getSelectedValue();
             if(item == null) return;
-            if(item.obj==null){
+            if(item.obj==null && e.getClickCount() == 2){
                 loadBeatmapList(item.getPath());
-            }else{
+            }
+            if(item.obj!=null){
                 fillInfo((Beatmap) item.getObj());
                 selected = (Beatmap) item.getObj();
             }
-        }
         }
     };
 }

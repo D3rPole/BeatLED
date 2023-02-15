@@ -1,11 +1,21 @@
 package Lighting.Components;
 
+import Lighting.DeviceLED;
+
 public class LEDstrip {
     LED[] strip;
     int length;
 
+    LEDstrip(){}
     public LEDstrip(int length){
         this.length = length;
+        strip = new LED[this.length];
+        for (int i = 0; i < this.length; i++) {
+            strip[i] = new LED();
+        }
+    }
+
+    public void initStrip(){
         strip = new LED[this.length];
         for (int i = 0; i < this.length; i++) {
             strip[i] = new LED();
@@ -43,5 +53,9 @@ public class LEDstrip {
             arr[i*3 + 2] = (byte)led.color.r;
         }
         return arr;
+    }
+
+    public int getLength() {
+        return length;
     }
 }

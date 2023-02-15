@@ -13,13 +13,19 @@ public class DeviceLED {
     public Device device;
     public LEDstrip ledStrip;
     public ArrayList<Effect> effects;
+    public String name;
 
-    public DeviceLED(String ip, int port, int ledCount) throws SocketException, UnknownHostException {
+    public DeviceLED(){}
+    public DeviceLED(String name,String ip, int port, int ledCount) throws SocketException, UnknownHostException {
+        this.name = name;
         device = new Device(ip,port);
         ledStrip = new LEDstrip(ledCount);
         effects = new ArrayList<>();
     }
-
+    public void init(){
+        ledStrip.initStrip();
+        device.initDevice();
+    }
     public void addEffect(int type, int from, int to, boolean reversed){
         Effect effect = new Effect(type,from,to,reversed);
         effects.add(effect);
@@ -38,5 +44,10 @@ public class DeviceLED {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

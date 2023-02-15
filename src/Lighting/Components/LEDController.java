@@ -21,55 +21,12 @@ import java.util.TimerTask;
 public class LEDController {
     Fixture[] fixtures;
 
-    /*Device barSides;
-    Device shishaTeller;
-    Device barLEDs;
-    Device bildLEDs;*/
-
-    DeviceLED[] devices;
-
     TimerTask timerTask;
 
     boolean active = false;
 
     public LEDController(){
         Debug.log("Creating LEDController");
-        devices = new DeviceLED[5];
-        try {
-            devices[0] = new DeviceLED("192.168.178.77",65506,100);
-            devices[1] = new DeviceLED("192.168.178.76",65506,157); //bar top
-            devices[2] = new DeviceLED("192.168.178.72",65506,10); //shisha
-            devices[3] = new DeviceLED("192.168.178.67",65506,357); //bar center
-            devices[4] = new DeviceLED("192.168.178.73",65506,130); // picture
-
-            devices[0].addEffect(Effect.effect.CENTER_LIGHTS.ordinal(),20,22,false);
-
-            devices[1].addEffect(0,0,30,false);
-            devices[1].addEffect(0,127,30,true);
-            devices[1].addEffect(1,78,48,true);
-            devices[1].addEffect(1,79,48,false);
-            devices[1].addEffect(4,68,20,false);
-
-            devices[2].addEffect(Effect.effect.BACK_LIGHTS.ordinal(),0,10,false);
-
-            devices[3].addEffect(2,63,120,false);
-            devices[3].addEffect(3,189,120,true);
-            devices[4].addEffect(Effect.effect.CENTER_LIGHTS.ordinal(), 0,130,false);
-
-            /*
-            0: backlights
-            1: ring
-            2: left laser
-            3: right laser
-            4: center lights
-             */
-            /*barSides = new Device("192.168.178.67",65506);
-            shishaTeller = new Device("192.168.178.72",65506);
-            barLEDs = new Device("192.168.178.76",65506);
-            bildLEDs = new Device("192.168.178.73",65506);*/
-        } catch (SocketException | UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
 
         setEnvironment("DefaultEnvironment");
 
@@ -118,62 +75,16 @@ public class LEDController {
         }
     }
 
-    /*LEDstrip ledStripBarTop = new LEDstrip(157);
-    LEDstrip ledStripShisha = new LEDstrip(10);
-
-    LEDstrip ledBarSides = new LEDstrip(357);
-    LEDstrip ledBildSides = new LEDstrip(130);*/
-
 
     void update(){
         if(active) {
-            /*ledStripBarTop.clear();
-            ledStripShisha.clear();
-            ledBarSides.clear();
-            ledBildSides.clear();*/
-
             for (int i = 0; i < fixtures.length; i++) {
                 fixtures[i].update();
             }
-        /*
-        0: backlights
-        1: ring
-        2: left laser
-        3: right laser
-        4: center lights
-         */
 
-            /*fixtures[4].addToStrip(ledStripShisha, 0, 10);
-
-            fixtures[0].addToStrip(ledStripBarTop, 0, 30);
-            fixtures[0].addToStrip(ledStripBarTop, 157, 30, true);
-            fixtures[1].addToStrip(ledStripBarTop, 78, 48, true);
-            fixtures[1].addToStrip(ledStripBarTop, 79, 48);
-            fixtures[4].addToStrip(ledStripBarTop, 68, 20);
-
-            fixtures[2].addToStrip(ledBarSides, 63, 120);
-            fixtures[3].addToStrip(ledBarSides, 189, 120, true);
-            fixtures[0].addToStrip(ledBarSides, 252, 35);
-            fixtures[4].addToStrip(ledBarSides, 287, 35);
-            fixtures[0].addToStrip(ledBarSides, 322, 35);
-
-            fixtures[1].addToStrip(ledBildSides, 14, 51);
-            fixtures[1].addToStrip(ledBildSides, 79, 51);
-
-            fixtures[4].addToStrip(ledBildSides, 0, 14);
-            fixtures[4].addToStrip(ledBildSides, 65, 14);*/
-
-            for (int i = 0; i < devices.length; i++) {
-                devices[i].applyEffects(fixtures);
+            for (int i = 0; i < Config.devices.size(); i++) {
+                Config.devices.get(i).applyEffects(fixtures);
             }
-            /*try {
-                shishaTeller.send(ledStripShisha.toByteArray());
-                barSides.send(ledBarSides.toByteArray());
-                barLEDs.send(ledStripBarTop.toByteArray());
-                bildLEDs.send(ledBildSides.toByteArray());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }*/
         }
     }
 

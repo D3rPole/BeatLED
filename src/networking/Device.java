@@ -11,10 +11,19 @@ public class Device {
 
     private final DatagramSocket dsocket = new DatagramSocket();
 
+    Device() throws SocketException {}
     public Device(String ip,int port) throws SocketException, UnknownHostException {
         this.ip = ip;
         this.port = port;
         address = InetAddress.getByName(this.ip);
+    }
+
+    public void initDevice(){
+        try {
+            address = InetAddress.getByName(this.ip);
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void send(byte[] buffer) throws IOException, InvalidParameterException {
@@ -29,5 +38,13 @@ public class Device {
 
     public void stop(){
         dsocket.close();
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public String getIp() {
+        return ip;
     }
 }

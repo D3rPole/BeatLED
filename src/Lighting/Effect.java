@@ -2,6 +2,9 @@ package Lighting;
 
 public class Effect {
     public enum effect{ BACK_LIGHTS, RING_LIGHTS, LEFT_LASER, RIGHT_LASER, CENTER_LIGHTS }
+
+    public String name;
+
     public int type;
     public int fromLedIndex;
     public int toLedIndex;
@@ -12,5 +15,12 @@ public class Effect {
         this.fromLedIndex = fromLedIndex;
         this.toLedIndex = toLedIndex;
         this.reversed = reversed;
+    }
+
+    Effect(){}
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

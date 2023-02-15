@@ -5,6 +5,7 @@ import Lighting.Components.Color;
 import Lighting.Components.LEDController;
 import UI.MainUI;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -32,5 +33,14 @@ public class Utils {
             Debug.log(e);
         }
         return "";
+    }
+    public static void setEnabledRecursive(Component c, boolean enabled) {
+        c.setEnabled(enabled);
+        if (c instanceof Container) {
+            Component[] components = ((Container) c).getComponents();
+            for (Component child : components) {
+                setEnabledRecursive(child, enabled);
+            }
+        }
     }
 }
