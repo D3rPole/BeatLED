@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class DeviceLED {
     public Device device;
     public LEDstrip ledStrip;
-    public ArrayList<Effect> effects;
+    public Effect[] effects;
     public String name;
 
     public DeviceLED(){}
@@ -20,21 +20,27 @@ public class DeviceLED {
         this.name = name;
         device = new Device(ip,port);
         ledStrip = new LEDstrip(ledCount);
-        effects = new ArrayList<>();
+        effects = new Effect[0];
     }
     public void init(){
         ledStrip.initStrip();
         device.initDevice();
     }
-    public void addEffect(int type, int from, int to, boolean reversed){
-        Effect effect = new Effect(type,from,to,reversed);
-        effects.add(effect);
+    public void addEffect(String name,int type, int from, int to, boolean reversed){
+        Effect effect = new Effect(name,type,from,to,reversed);
+        int newLength = effects.length + 1;
+        Effect[] newEffects = new Effect[newLength];
+        for (int i = 0; i < effects.length; i++) {
+            newEffects[i] = effects[i];
+        }
+        newEffects[newLength - 1] = effect;
+        effects = newEffects;
     }
 
     public void applyEffects(Fixture[] fixtures){
         ledStrip.clear();
-        for (int i = 0; i < effects.size(); i++) {
-            Effect effect = effects.get(i);
+        for (int i = 0; i < effects.length; i++) {
+            Effect effect = effects[i];
             if(i > fixtures.length) break;
 
             fixtures[i].addToStrip(ledStrip,effect.fromLedIndex,effect.toLedIndex,effect.reversed);

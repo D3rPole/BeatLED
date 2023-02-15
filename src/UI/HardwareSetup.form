@@ -164,7 +164,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="5d635" class="javax.swing.JList" binding="EffectList">
+              <component id="5d635" class="javax.swing.JList" binding="effectList">
                 <constraints/>
                 <properties/>
               </component>

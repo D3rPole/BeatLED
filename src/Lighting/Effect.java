@@ -10,7 +10,8 @@ public class Effect {
     public int toLedIndex;
     public boolean reversed;
 
-    public Effect(int type, int fromLedIndex, int toLedIndex, boolean reversed){
+    public Effect(String name, int type, int fromLedIndex, int toLedIndex, boolean reversed){
+        this.name = name;
         this.type = type;
         this.fromLedIndex = fromLedIndex;
         this.toLedIndex = toLedIndex;

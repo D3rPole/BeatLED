@@ -18,8 +18,8 @@ public class HardwareSetup {
     private JButton addDeviceButton;
     private JButton removeEffectButton;
     private JPanel hardwareSetupPanel;
-    private JList deviceList;
-    private JList EffectList;
+    private JList<Item> deviceList;
+    private JList<Item> effectList;
     private JButton applyChangesButton;
     private JTextField nameTextField;
     private JTextField ipTextField;
@@ -79,24 +79,44 @@ public class HardwareSetup {
         deviceList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 1) {
-                    DeviceLED selectedDevice = (DeviceLED) ((Item)deviceList.getSelectedValue()).getObj();
-                    selectedIndex = deviceList.getSelectedIndex();
-                    nameTextField.setText(selectedDevice.name);
-                    ipTextField.setText(selectedDevice.device.getIp());
-                    portSpinner.setValue(selectedDevice.device.getPort());
-                    ledCountSpinner.setValue(selectedDevice.ledStrip.getLength());
-                    Utils.setEnabledRecursive(deviceSettingsPanel,true);
-                    removeDeviceButton.setEnabled(true);
-                }
+            if (e.getClickCount() == 1) {
+                DeviceLED selectedDevice = (DeviceLED) (deviceList.getSelectedValue()).getObj();
+                selectedIndex = deviceList.getSelectedIndex();
+                nameTextField.setText(selectedDevice.name);
+                ipTextField.setText(selectedDevice.device.getIp());
+                portSpinner.setValue(selectedDevice.device.getPort());
+                ledCountSpinner.setValue(selectedDevice.ledStrip.getLength());
+                updateEffectList();
+                Utils.setEnabledRecursive(deviceSettingsPanel,true);
+                removeDeviceButton.setEnabled(true);
+            }
             }
         });
 
-        addEffectButton.addActionListener(e -> new AddEffect());
+        addEffectButton.addActionListener(e -> {
+            AddEffect addEffect = new AddEffect(Config.devices.get(selectedIndex));
+            addEffect.frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    updateEffectList();
+                }
+            });
+        });
 
         updateDeviceList();
         Utils.setEnabledRecursive(deviceSettingsPanel,false);
         removeDeviceButton.setEnabled(false);
+    }
+
+    void updateEffectList(){
+        Item[] items = new Item[Config.devices.get(selectedIndex).effects.length];
+
+        for (int i = 0; i < items.length; i++) {
+            items[i] = new Item();
+            items[i].setObj(Config.devices.get(selectedIndex).effects[i]);
+        }
+
+        effectList.setListData(items);
     }
 
     void updateDeviceList(){
