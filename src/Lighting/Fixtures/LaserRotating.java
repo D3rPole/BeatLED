@@ -2,6 +2,7 @@ package Lighting.Fixtures;
 
 import Lighting.Components.LEDstrip;
 import Utils.Utils;
+import Utils.Debug;
 
 import java.util.Date;
 
@@ -14,7 +15,7 @@ public class LaserRotating extends Fixture{
 
 
     @Override
-    public void addToStrip(LEDstrip ledStrip, int position, int size, boolean renderBackwards) {
+    public void addToStrip(LEDstrip ledStrip, int from, int to, boolean renderBackwards) {
         if(fixtureType.equals("lasers_left")){
             laserSpeed = Utils.leftLaserSpeed;
         }
@@ -24,11 +25,12 @@ public class LaserRotating extends Fixture{
 
         long angle = (new Date().getTime() * laserSpeed / 200)%360;
         double radian = angle / 180.0 * Math.PI;
+        int size = to - from;
         int mul = 1;
         if(renderBackwards) mul = -1;
         for (int i = 0; i < lasers; i++) {
-            double sin = Math.sin(radian + (double)i / lasers * 2 * Math.PI) * size / 2;
-            ledStrip.placePoint(position + (int)sin * mul,Math.max(1,size / 5),lights[i% lights.length].getCurrentColor());
+            double sin = (Math.sin(radian * mul + (double)i / lasers * 2 * Math.PI) + 1) / 2 * size;
+            ledStrip.placePoint(from + (int)sin,Math.max(1,size / 5),lights[i% lights.length].getCurrentColor());
         }
     }
 }

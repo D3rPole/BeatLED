@@ -6,6 +6,7 @@ import Beatsaber.LightEvent;
 import Beatsaber.MapLoader;
 import Utils.Config;
 import Utils.Utils;
+import Utils.Debug;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -105,8 +106,9 @@ public class MainUI extends Component {
         });
 
         sendCommandButton.addActionListener(e -> {
-            LightEvent event = new LightEvent(0, actionComboBox.getSelectedIndex(),typeComboBox.getSelectedIndex(), new JSONObject());
+            LightEvent event = new LightEvent(0, actionComboBox.getSelectedIndex(),((int)((Item)typeComboBox.getSelectedItem()).getObj()), new JSONObject());
             Utils.ledController.lightEvent(event);
+            Debug.log(event);
         });
 
         hardwareSetupButton.addActionListener(e -> new HardwareSetup());

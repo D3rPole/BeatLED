@@ -2,6 +2,7 @@ package Lighting;
 
 import Lighting.Components.LEDstrip;
 import Lighting.Fixtures.Fixture;
+import Utils.Debug;
 import networking.Device;
 
 import java.io.IOException;
@@ -37,19 +38,29 @@ public class DeviceLED {
         effects = newEffects;
     }
 
+    public void removeEffect(int index){
+        int newLength = effects.length - 1;
+        Effect[] newEffects = new Effect[newLength];
+        int j = 0;
+        for (int i = 0; i < effects.length; i++) {
+            if(i != index){
+                newEffects[j] = effects[i];
+                j++;
+            }
+        }
+        effects = newEffects;
+    }
+
     public void applyEffects(Fixture[] fixtures){
         ledStrip.clear();
         for (int i = 0; i < effects.length; i++) {
             Effect effect = effects[i];
-            if(i > fixtures.length) break;
+            fixtures[effect.type].addToStrip(ledStrip,effect.fromLedIndex,effect.toLedIndex,effect.reversed);
+        }
+    }
 
-            fixtures[i].addToStrip(ledStrip,effect.fromLedIndex,effect.toLedIndex,effect.reversed);
-        }
-        try {
-            device.send(ledStrip.toByteArray());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void send() throws IOException {
+        device.send(ledStrip.toByteArray());
     }
 
     @Override

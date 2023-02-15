@@ -2,7 +2,7 @@ package Utils;
 
 import BeatmapPlayer.BeatmapPlayer;
 import Lighting.Components.Color;
-import Lighting.Components.LEDController;
+import Lighting.LEDController;
 import UI.MainUI;
 
 import java.awt.*;

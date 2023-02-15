@@ -20,6 +20,14 @@ public class Config {
     public static int defaultPort = 65506;
 
     public static ArrayList<DeviceLED> devices = new ArrayList<>();
+    public static DeviceLED[] deviceArray = new DeviceLED[0];
+
+    public static void updateArray(){
+        deviceArray = new DeviceLED[devices.size()];
+        for (int i = 0; i < deviceArray.length; i++) {
+            deviceArray[i] = devices.get(i);
+        }
+    }
 
     public static void save(){
         Debug.log("Saving config");
@@ -60,6 +68,7 @@ public class Config {
         } catch (JsonProcessingException e) {
             Debug.log(e);
         }
+        updateArray();
     }
 
 }

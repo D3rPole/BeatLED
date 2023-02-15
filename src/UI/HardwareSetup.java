@@ -1,6 +1,7 @@
 package UI;
 
 import Lighting.DeviceLED;
+import Lighting.Effect;
 import Utils.Config;
 import Utils.Utils;
 
@@ -26,8 +27,16 @@ public class HardwareSetup {
     private JSpinner portSpinner;
     private JSpinner ledCountSpinner;
     private JPanel deviceSettingsPanel;
+    private JTextField effectNameTextField;
+    private JComboBox typeComboBox;
+    private JSpinner fromSpinner;
+    private JSpinner toSpinner;
+    private JCheckBox reversedCheckBox;
+    private JButton applyEffectChangesButton;
+    private JPanel changeEffectPanel;
 
     int selectedIndex = -1;
+    int selectedEffectIndex = -1;
     HardwareSetup(){
         JFrame frame = new JFrame();
         frame.setContentPane(hardwareSetupPanel);
@@ -36,6 +45,12 @@ public class HardwareSetup {
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
+
+        typeComboBox.addItem(new Item("Back Lights",0));
+        typeComboBox.addItem(new Item("Ring Lights",1));
+        typeComboBox.addItem(new Item("Left Lasers",2));
+        typeComboBox.addItem(new Item("Right Lasers",3));
+        typeComboBox.addItem(new Item("Center Lights",4));
 
         addDeviceButton.addActionListener(e -> {
             AddDevice addDevice = new AddDevice();
@@ -88,6 +103,7 @@ public class HardwareSetup {
                 ledCountSpinner.setValue(selectedDevice.ledStrip.getLength());
                 updateEffectList();
                 Utils.setEnabledRecursive(deviceSettingsPanel,true);
+                Utils.setEnabledRecursive(changeEffectPanel,false);
                 removeDeviceButton.setEnabled(true);
             }
             }
@@ -101,6 +117,40 @@ public class HardwareSetup {
                     updateEffectList();
                 }
             });
+        });
+
+        removeEffectButton.addActionListener(e -> {
+            Config.devices.get(selectedIndex).removeEffect(effectList.getSelectedIndex());
+            updateEffectList();
+            Config.save();
+        });
+
+        effectList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() == 1){
+                    Utils.setEnabledRecursive(changeEffectPanel, true);
+                    selectedEffectIndex = effectList.getSelectedIndex();
+                    Effect effect = Config.devices.get(selectedIndex).effects[selectedEffectIndex];
+
+                    effectNameTextField.setText(effect.name);
+                    typeComboBox.setSelectedIndex(effect.type);
+                    fromSpinner.setValue(effect.fromLedIndex);
+                    toSpinner.setValue(effect.toLedIndex);
+                    reversedCheckBox.setSelected(effect.reversed);
+                }
+            }
+        });
+
+        applyEffectChangesButton.addActionListener(f -> {
+            Effect effect = Config.devices.get(selectedIndex).effects[selectedEffectIndex];
+            effect.name = effectNameTextField.getText();
+            effect.type = typeComboBox.getSelectedIndex();
+            effect.fromLedIndex = (int)fromSpinner.getValue();
+            effect.toLedIndex = (int)toSpinner.getValue();
+            effect.reversed = reversedCheckBox.isSelected();
+            updateEffectList();
+            Config.save();
         });
 
         updateDeviceList();

@@ -1,6 +1,6 @@
 
 import BeatmapPlayer.BeatmapPlayer;
-import Lighting.Components.LEDController;
+import Lighting.LEDController;
 import UI.MainUI;
 import Utils.Utils;
 import Utils.Config;

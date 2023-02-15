@@ -1,4 +1,4 @@
-package Lighting.Components;
+package Lighting;
 
 import Beatsaber.LightEvent;
 import Lighting.DeviceLED;
@@ -12,9 +12,11 @@ import networking.Device;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,7 +40,7 @@ public class LEDController {
                     update();
                 }
             };
-            timer.schedule(timerTask,0,20);
+            timer.schedule(timerTask,0,32);
         };
 
         Thread thread = new Thread(task);
@@ -75,15 +77,34 @@ public class LEDController {
         }
     }
 
-
+    int ticks = 0;
+    long lastTime = new Date().getTime();
     void update(){
+        ticks++;
+        if(new Date().getTime() - lastTime > 1000){
+            lastTime = new Date().getTime();
+            Debug.log("tps: " + ticks);
+            ticks = 0;
+        }
         if(active) {
-            for (int i = 0; i < fixtures.length; i++) {
-                fixtures[i].update();
-            }
+            //Thread thread = new Thread(()->{
+                for (int i = 0; i < fixtures.length; i++) {
+                    fixtures[i].update();
+                }
+            //});
+            //thread.run();
 
             for (int i = 0; i < Config.devices.size(); i++) {
-                Config.devices.get(i).applyEffects(fixtures);
+                //Config.devices.get(i).applyEffects(fixtures);
+                Config.deviceArray[i].applyEffects(fixtures);
+            }
+            try {
+                for (int i = 0; i < Config.devices.size(); i++) {
+                    //Config.devices.get(i).send();
+                    Config.deviceArray[i].device.send(Config.deviceArray[i].ledStrip.toByteArray());
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }
