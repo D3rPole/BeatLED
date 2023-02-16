@@ -41,6 +41,7 @@ public class MainUI extends Component {
     private JButton sendCommandButton;
     private JButton hardwareSetupButton;
     private JPanel manualControlsPanel;
+    private JButton previewDevicesButton;
     private Logs logWindow;
 
     public MainUI(){
@@ -112,6 +113,8 @@ public class MainUI extends Component {
         });
 
         hardwareSetupButton.addActionListener(e -> new HardwareSetup());
+
+        previewDevicesButton.addActionListener(e -> new PreviewDevices());
     }
 
     public void setActive(boolean active){

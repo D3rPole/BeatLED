@@ -93,6 +93,7 @@ public class BeatmapPlayer {
                 public void run() {
                     Utils.ledController.lightEvent(event);
                     nextEvent(events);
+                    Thread.currentThread().interrupt();
                 }
             };
 

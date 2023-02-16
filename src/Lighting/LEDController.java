@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.sql.Time;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -32,19 +33,6 @@ public class LEDController {
 
         setEnvironment("DefaultEnvironment");
 
-        Runnable task = () -> {
-            Timer timer = new Timer();
-            timerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    update();
-                }
-            };
-            timer.schedule(timerTask,0,32);
-        };
-
-        Thread thread = new Thread(task);
-        thread.start();
     }
 
     public void setEnvironment(String environment){
@@ -76,36 +64,35 @@ public class LEDController {
             Debug.log(fixtures[i]);
         }
     }
+    public long FPS;
+    final int TARGET_FPS = 30;
+    final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
+    long lastLoopTime = System.nanoTime();
+    public void update(){
+        while(true) {
+            long now = System.nanoTime();
+            FPS = 1000000000 / (now - lastLoopTime);
+            lastLoopTime = now;
 
-    int ticks = 0;
-    long lastTime = new Date().getTime();
-    void update(){
-        ticks++;
-        if(new Date().getTime() - lastTime > 1000){
-            lastTime = new Date().getTime();
-            Debug.log("tps: " + ticks);
-            ticks = 0;
-        }
-        if(active) {
-            //Thread thread = new Thread(()->{
+            if (active) {
                 for (int i = 0; i < fixtures.length; i++) {
                     fixtures[i].update();
                 }
-            //});
-            //thread.run();
 
-            for (int i = 0; i < Config.devices.size(); i++) {
-                //Config.devices.get(i).applyEffects(fixtures);
-                Config.deviceArray[i].applyEffects(fixtures);
+                for (int i = 0; i < Config.devices.size(); i++) {
+                    Config.devices.get(i).applyEffects(fixtures);
+                }
+                try {
+                    for (int i = 0; i < Config.devices.size(); i++) {
+                        Config.devices.get(i).send();
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
             try {
-                for (int i = 0; i < Config.devices.size(); i++) {
-                    //Config.devices.get(i).send();
-                    Config.deviceArray[i].device.send(Config.deviceArray[i].ledStrip.toByteArray());
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+                Thread.sleep((lastLoopTime-System.nanoTime() + OPTIMAL_TIME)/1000000);
+            } catch (Exception e) {}
         }
     }
 

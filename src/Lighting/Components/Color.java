@@ -3,9 +3,9 @@ package Lighting.Components;
 import org.json.JSONArray;
 
 public class Color {
-    int r = 0;
-    int b = 0;
-    int g = 0;
+    public int r = 0;
+    public int b = 0;
+    public int g = 0;
 
     public Color(int r, int g, int b){
         this.r = clamp(0,255,r);

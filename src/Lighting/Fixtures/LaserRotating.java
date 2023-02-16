@@ -13,6 +13,8 @@ public class LaserRotating extends Fixture{
         super(numberLamps);
     }
 
+    long angle;
+
 
     @Override
     public void addToStrip(LEDstrip ledStrip, int from, int to, boolean renderBackwards) {
@@ -23,7 +25,7 @@ public class LaserRotating extends Fixture{
             laserSpeed = Utils.rightLaserSpeed;
         }
 
-        long angle = (new Date().getTime() * laserSpeed / 200)%360;
+        angle = (java.lang.System.currentTimeMillis() * laserSpeed / 200)%360;
         double radian = angle / 180.0 * Math.PI;
         int size = to - from;
         int mul = 1;

@@ -15,6 +15,10 @@ public class LEDstrip {
         }
     }
 
+    public Color getLEDColor(int index){
+        return strip[index].color;
+    }
+
     public void initStrip(){
         strip = new LED[this.length];
         for (int i = 0; i < this.length; i++) {
