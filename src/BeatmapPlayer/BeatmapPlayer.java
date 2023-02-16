@@ -17,7 +17,11 @@ public class BeatmapPlayer {
 
     long timeA;
 
+    public boolean playing = false;
+
     public void load(String path){
+        if(playing) return;
+        playing = true;
         Debug.log("loading Beatmap...");
         MapLoader mapLoader = new MapLoader();
         if(mapLoader.load(path)){
@@ -32,6 +36,7 @@ public class BeatmapPlayer {
 
     public void stop(){
         if(songPlayer == null) return;
+        playing = false;
         songPlayer.stop();
         Utils.ledController.setActive(false);
     }
@@ -39,6 +44,7 @@ public class BeatmapPlayer {
     public void play(int difficulty){
         if(initiated){
             stop();
+            playing = true;
             songPlayer = new OggPlayer(songPath);
             Utils.difficulty = difficulty;
             BeatmapDiff diff = beatmap.diffs.get(difficulty);
@@ -98,6 +104,9 @@ public class BeatmapPlayer {
             };
 
             timer.schedule(nextEventTask,  Math.max(0, time));
-        }else Debug.log("no events");
+        }else{
+            Debug.log("no events");
+            playing = false;
+        }
     }
 }

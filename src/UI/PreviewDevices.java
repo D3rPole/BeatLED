@@ -15,6 +15,7 @@ public class PreviewDevices {
     private JLabel fpsLabel;
 
     private VisPanel[] panels;
+    Timer timer;
     PreviewDevices(){
         JFrame frame = new JFrame();
         frame.setContentPane(previewPanel);
@@ -38,38 +39,23 @@ public class PreviewDevices {
             devicesPanel.add(visPanel);
         }
 
+        timer = new Timer();
         update();
     }
 
     void update(){
-        while(true) {
-            fpsLabel.setText(String.valueOf(Utils.ledController.FPS) + " fps");
-            for (int i = 0; i < panels.length; i++) {
-                VisPanel panel = panels[i];
-                panel.repaint();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                fpsLabel.setText(String.valueOf(Utils.ledController.FPS) + " fps");
+                for (int i = 0; i < panels.length; i++) {
+                    VisPanel panel = panels[i];
+                    panel.repaint();
+                }
+                try {
+                    Thread.sleep(20);
+                } catch (Exception e) {
+                }
             }
-            try {
-                Thread.sleep(20);
-            } catch (Exception e) {}
-        }
-    }
-}
-
-class VisPanel extends JPanel {
-    LEDstrip strip;
-    VisPanel(LEDstrip strip){
-        this.strip = strip;
-    }
-    public void paintComponent(Graphics g) {
-        int height = this.getHeight() - 2;
-        int width = this.getWidth();
-
-        for (int i = 0; i < width; i++) {
-            Lighting.Components.Color c = strip.getLEDColor((int) ((double)i / width * (strip.getLength() - 1)));
-            Color color = new Color(c.r,c.g,c.b);
-            g.setColor(color);
-            g.fillRect(i,0,1,height);
-            g.setColor(Color.black);
-        }
+        },0,16);
     }
 }

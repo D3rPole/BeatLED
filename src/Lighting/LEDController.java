@@ -1,6 +1,7 @@
 package Lighting;
 
 import Beatsaber.LightEvent;
+import Lighting.Components.LEDstrip;
 import Lighting.DeviceLED;
 import Lighting.Effect;
 import Utils.*;
@@ -75,24 +76,46 @@ public class LEDController {
             lastLoopTime = now;
 
             if (active) {
+                //Thread[] threads = new Thread[fixtures.length];
                 for (int i = 0; i < fixtures.length; i++) {
-                    fixtures[i].update();
+                    int finalI = i;
+                    new Thread(() -> {
+                        fixtures[finalI].update();
+                    }).start();
                 }
 
+                //Thread[] threads = new Thread[fixtures.length];
                 for (int i = 0; i < Config.devices.size(); i++) {
+                    int finalI = i;
+                    new Thread(() -> {
+                        Config.devices.get(finalI).applyEffects(fixtures);
+                    }).start();
+                }
+
+                /*for (int i = 0; i < Config.devices.size(); i++) {
                     Config.devices.get(i).applyEffects(fixtures);
-                }
-                try {
-                    for (int i = 0; i < Config.devices.size(); i++) {
-                        Config.devices.get(i).send();
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                }*/
+                send();
             }
             try {
-                Thread.sleep((lastLoopTime-System.nanoTime() + OPTIMAL_TIME)/1000000);
+                Thread.sleep((lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
             } catch (Exception e) {}
+        }
+    }
+
+    public void send(){
+        try {
+            Device[] devices = new Device[Config.devices.size()];
+            LEDstrip[] strips = new LEDstrip[Config.devices.size()];
+            for (int i = 0; i < Config.devices.size(); i++) {
+                devices[i] = Config.devices.get(i).device;
+                strips[i] = Config.devices.get(i).ledStrip;
+            }
+            for (int i = 0; i < devices.length; i++) {
+                devices[i].send(strips[i].toByteArray());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

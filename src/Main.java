@@ -17,6 +17,6 @@ public class Main {
             Utils.ledController = new LEDController();
             Utils.ledController.update();
         });
-        thread.run();
+        thread.start();
     }
 }

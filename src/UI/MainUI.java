@@ -1,5 +1,6 @@
 package UI;
 
+import BeatmapPlayer.BeatmapPlayer;
 import Beatsaber.Beatmap;
 import Beatsaber.BeatmapDiff;
 import Beatsaber.LightEvent;
@@ -14,6 +15,7 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 
 public class MainUI extends Component {
@@ -114,7 +116,9 @@ public class MainUI extends Component {
 
         hardwareSetupButton.addActionListener(e -> new HardwareSetup());
 
-        previewDevicesButton.addActionListener(e -> new PreviewDevices());
+        previewDevicesButton.addActionListener(e -> {
+            PreviewDevices p = new PreviewDevices();
+        });
     }
 
     public void setActive(boolean active){
@@ -162,8 +166,14 @@ public class MainUI extends Component {
 
         logWindow.log(o);
     }
-
+    public static void resetList(JList list) {
+        DefaultListModel model = new DefaultListModel();
+        list.setModel(model);
+        list.repaint();
+    }
     void fillInfo(Beatmap beatmap){
+        resetList(diffList);
+
         StyledDocument doc = infoPane.getStyledDocument();
         try {
             String str = "Song name: " + beatmap.songName + "\n" + "Song author: " + beatmap.songAuthor;
@@ -172,17 +182,20 @@ public class MainUI extends Component {
         } catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
-
-        BeatmapDiff[] diffs = beatmap.diffs.toArray(new BeatmapDiff[0]);
+        BeatmapDiff[] diffs = beatmap.diffs.toArray(new BeatmapDiff[beatmap.diffs.size()]);
         diffList.setListData(diffs);
         diffList.addMouseListener(playDiff);
     }
     Beatmap selected;
+
     MouseAdapter playDiff = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
-            JList list = (JList)e.getSource();
             if (e.getClickCount() == 2) {
+                JList list = (JList)e.getSource();
+                if(Utils.beatmapPlayer.playing) return;
+                Utils.beatmapPlayer = new BeatmapPlayer();
+                Debug.log("---------------------------------------------");
                 int index = list.getSelectedIndex();
                 Utils.beatmapPlayer.load(selected.path);
                 Utils.beatmapPlayer.play(index);

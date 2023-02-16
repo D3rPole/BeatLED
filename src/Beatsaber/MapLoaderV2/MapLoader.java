@@ -16,6 +16,7 @@ public class MapLoader {
     Beatmap beatmap;
 
     public boolean load(String path) {
+        beatmap = null;
         Debug.log("Loading map: " + path);
         if(path.equals("")) return false;
         this.path = path;

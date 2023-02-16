@@ -59,10 +59,6 @@ public class DeviceLED {
         }
     }
 
-    public void send() throws IOException {
-        device.send(ledStrip.toByteArray());
-    }
-
     @Override
     public String toString() {
         return name;

@@ -1,5 +1,7 @@
 package BeatmapPlayer;
 
+import Utils.Debug;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -16,6 +18,7 @@ import static javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED;
 
 public class OggPlayer extends Thread {
     private String path;
+    public boolean playing;
     @Override
     public void run() {
         play(path);
@@ -26,6 +29,7 @@ public class OggPlayer extends Thread {
     }
 
     private void play(String filePath) {
+        if(playing) return;
         final File file = new File(filePath);
 
         try{
@@ -35,12 +39,14 @@ public class OggPlayer extends Thread {
 
             line = (SourceDataLine) AudioSystem.getLine(info);
             if (line != null) {
+                playing = true;
                 line.open(outFormat);
                 line.start();
                 AudioInputStream inputMystream = AudioSystem.getAudioInputStream(outFormat, in);
                 stream(inputMystream, line);
                 line.drain();
                 line.stop();
+                playing = false;
             }
 
         } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
