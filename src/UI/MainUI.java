@@ -15,7 +15,6 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 
 public class MainUI extends Component {
@@ -36,7 +35,7 @@ public class MainUI extends Component {
     private JButton openLogsButton;
     private JCheckBox manualControlCheckBox;
     private JComboBox<Item> typeComboBox;
-    private JComboBox actionComboBox;
+    private JComboBox<Item> actionComboBox;
     private JSpinner redSpinner;
     private JSpinner blueSpinner;
     private JSpinner greenSpinner;
@@ -44,6 +43,9 @@ public class MainUI extends Component {
     private JButton hardwareSetupButton;
     private JPanel manualControlsPanel;
     private JButton previewDevicesButton;
+    private JLabel tpsLabel;
+    private JLabel tickTimeLabel;
+    private JLabel targetTpsLabel;
     private Logs logWindow;
 
     public MainUI(){
@@ -166,8 +168,13 @@ public class MainUI extends Component {
 
         logWindow.log(o);
     }
-    public static void resetList(JList list) {
-        DefaultListModel model = new DefaultListModel();
+    public void updateTPS(long tps,long ms,int target){
+        tpsLabel.setText("tps: " + tps);
+        targetTpsLabel.setText("Target tps: " + target);
+        tickTimeLabel.setText("t/µs: " + ms / 1000 + "µs");
+    }
+    public static void resetList(JList<BeatmapDiff> list) {
+        DefaultListModel<BeatmapDiff> model = new DefaultListModel<BeatmapDiff>();
         list.setModel(model);
         list.repaint();
     }

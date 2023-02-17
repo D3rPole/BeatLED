@@ -12,7 +12,6 @@ import java.util.TimerTask;
 public class PreviewDevices {
     private JPanel previewPanel;
     private JPanel devicesPanel;
-    private JLabel fpsLabel;
 
     private VisPanel[] panels;
     Timer timer;
@@ -46,7 +45,6 @@ public class PreviewDevices {
     void update(){
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                fpsLabel.setText(String.valueOf(Utils.ledController.FPS) + " fps");
                 for (int i = 0; i < panels.length; i++) {
                     VisPanel panel = panels[i];
                     panel.repaint();

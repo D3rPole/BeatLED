@@ -21,6 +21,7 @@ import java.sql.Time;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class LEDController {
     Fixture[] fixtures;
@@ -65,31 +66,32 @@ public class LEDController {
             Debug.log(fixtures[i]);
         }
     }
-    public long FPS;
-    final int TARGET_FPS = 30;
+    public long TPS;
+    public long tickTime;
+    final int TARGET_FPS = 48;
     final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
     long lastLoopTime = System.nanoTime();
     public void update(){
         while(true) {
-            long now = System.nanoTime();
-            FPS = 1000000000 / (now - lastLoopTime);
-            lastLoopTime = now;
+            long start = System.nanoTime();
+            TPS = 1000000000 / (start - lastLoopTime);
+            lastLoopTime = start;
 
             if (active) {
                 //Thread[] threads = new Thread[fixtures.length];
                 for (int i = 0; i < fixtures.length; i++) {
-                    int finalI = i;
-                    new Thread(() -> {
-                        fixtures[finalI].update();
-                    }).start();
+                    //int finalI = i;
+                    //new Thread(() -> {
+                        fixtures[i].update();
+                    //}).start();
                 }
 
                 //Thread[] threads = new Thread[fixtures.length];
                 for (int i = 0; i < Config.devices.size(); i++) {
-                    int finalI = i;
-                    new Thread(() -> {
-                        Config.devices.get(finalI).applyEffects(fixtures);
-                    }).start();
+                    //int finalI = i;
+                    //new Thread(() -> {
+                        Config.devices.get(i).applyEffects(fixtures);
+                    //}).start();
                 }
 
                 /*for (int i = 0; i < Config.devices.size(); i++) {
@@ -97,8 +99,10 @@ public class LEDController {
                 }*/
                 send();
             }
+            tickTime = System.nanoTime() - start;
+            Utils.ui.updateTPS(TPS,tickTime,TARGET_FPS);
             try {
-                Thread.sleep((lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
+                TimeUnit.NANOSECONDS.sleep(OPTIMAL_TIME - tickTime);
             } catch (Exception e) {}
         }
     }
