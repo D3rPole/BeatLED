@@ -15,13 +15,18 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class Parser {
-    public static Info parseInfo(String path) throws JsonProcessingException {
+    public static Info parseInfo(String path) {
         File infoFile = new File(path + "\\info.dat");
         if(!infoFile.exists()) return null;
 
         Info info = new Info();
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(Utils.readFile(infoFile));
+        JsonNode rootNode = null;
+        try {
+            rootNode = objectMapper.readTree(Utils.readFile(infoFile));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         info.path = path;
         info.version = rootNode.get("_version").asText();
@@ -49,18 +54,28 @@ public class Parser {
                 info.diffs.add(diff);
             }
         }
-        Debug.log(info + " is valid");
         return info;
     }
 
-    public static Diff parseDiff(String path, double BPM) throws JsonProcessingException {
+    public static boolean isBeatmap(String path){
+        boolean bool = parseInfo(path) != null;
+        Debug.log(path + " is beatmap: " + bool);
+        return bool;
+    }
+
+    public static Diff parseDiff(String path, double BPM) {
         File diffFile = new File(path);
         if(!diffFile.exists()) {Debug.log(path + " does not exist"); return null;}
         Diff diff = new Diff();
         diff.BPM = BPM;
 
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(Utils.readFile(diffFile));
+        JsonNode rootNode = null;
+        try {
+            rootNode = objectMapper.readTree(Utils.readFile(diffFile));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         if(rootNode.has("_version")){
             parseV2(diff, rootNode);
@@ -83,7 +98,6 @@ public class Parser {
             Event event = new Event();
             event.parseV2((long) (eventNode.get("_time").asDouble() * 60000 / diff.BPM),eventNode);
             diff.events[i] = event;
-            Debug.log(event);
         }
     }
     public static void parseV3(Diff diff, JsonNode rootNode){
@@ -94,9 +108,8 @@ public class Parser {
         for (int i = 0; i < eventsNode.size(); i++) {
             JsonNode eventNode = eventsNode.get(i);
             Event event = new Event();
-            event.parseV3((long) (eventNode.get("_time").asDouble() * 60000 / diff.BPM),eventNode);
+            event.parseV3((long) (eventNode.get("b").asDouble() * 60000 / diff.BPM),eventNode);
             diff.events[i] = event;
-            Debug.log(event);
         }
     }
 

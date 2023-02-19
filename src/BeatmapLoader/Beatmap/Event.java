@@ -27,6 +27,28 @@ public class Event {
     public Event(){
 
     }
+    public void setValue(int value){
+        if(value >= 2000000000){
+            color = colorFromInt(value);
+        }
+        switch(value){
+            case 0:
+                this.value = Config.value.OFF;
+                break;
+            case 1, 5:
+                this.value = Config.value.ON;
+                break;
+            case 2, 6:
+                this.value = Config.value.FLASH;
+                break;
+            case 3, 7:
+                this.value = Config.value.FADEOUT;
+                break;
+            default:
+                this.value = Config.value.OTHER;
+                break;
+        }
+    }
     public void parseV2(long time, JsonNode eventNode){
         this.time = time;
         this.valueAlt = eventNode.get("_value").asInt();

@@ -52,9 +52,9 @@ public class LEDstrip {
         byte[] arr = new byte[length*3];
         for (int i = 0; i < length; i++) {
             LED led = strip[i];
-            arr[i*3] = (byte)led.color.b;
+            arr[i*3] = (byte)led.color.r;
             arr[i*3 + 1] = (byte)led.color.g;
-            arr[i*3 + 2] = (byte)led.color.r;
+            arr[i*3 + 2] = (byte)led.color.b;
         }
         return arr;
     }

@@ -1,5 +1,6 @@
 package Lighting;
 
+import BeatmapLoader.Beatmap.Event;
 import Beatsaber.LightEvent;
 import Lighting.Components.LEDstrip;
 import Lighting.DeviceLED;
@@ -123,7 +124,7 @@ public class LEDController {
         }
     }
 
-    public void lightEvent(LightEvent event){
+    public void lightEvent(Event event){
         if(event.type == 12) Utils.leftLaserSpeed = event.valueAlt;
         if(event.type == 13) Utils.rightLaserSpeed = event.valueAlt;
         if(event.type > 4) return;
@@ -134,7 +135,7 @@ public class LEDController {
         }
         Utils.ui.log(event);
     }
-    void all(LightEvent event){
+    void all(Event event){
         Fixture fixture = fixtures[event.type];
         switch (event.value){
             case ON -> fixture.on();
@@ -163,7 +164,7 @@ public class LEDController {
             fixture.setColor(Utils.colorB);
         }
     }
-    void lightID(LightEvent event){
+    void lightID(Event event){
         Fixture fixture = fixtures[event.type];
 
         int[] lightIDs = event.customData.lightIDs;

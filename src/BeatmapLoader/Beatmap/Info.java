@@ -23,5 +23,10 @@ public class Info {
     public String environmentName;
     public double songTimeOffset;
     public ArrayList<DiffInfo> diffs;
+
+    @Override
+    public String toString() {
+        return songName + " - " + songAuthorName;
+    }
 }
 

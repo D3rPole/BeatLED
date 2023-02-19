@@ -1,16 +1,18 @@
 package BeatmapPlayer;
-import Beatsaber.Beatmap;
+import BeatmapLoader.Beatmap.Diff;
+import BeatmapLoader.Beatmap.DiffInfo;
+import BeatmapLoader.Beatmap.Event;
+import BeatmapLoader.Beatmap.Info;
+import BeatmapLoader.Parser;
 import Beatsaber.BeatmapDiff;
 import Beatsaber.LightEvent;
-import Beatsaber.MapLoader;
-import Beatsaber.MapLoaderV2.DiffParser;
 import Utils.Debug;
 import Utils.Utils;
 
 import java.util.*;
 
 public class BeatmapPlayer {
-    Beatmap beatmap;
+    Info info;
     boolean initiated;
     String songPath;
     public OggPlayer songPlayer;
@@ -23,11 +25,10 @@ public class BeatmapPlayer {
         if(playing) return;
         playing = true;
         Debug.log("loading Beatmap...");
-        MapLoader mapLoader = new MapLoader();
-        if(mapLoader.load(path)){
+        if(Parser.isBeatmap(path)){
             initiated = true;
-            beatmap = mapLoader.getBeatmap();
-            songPath = beatmap.songPath;
+            info = Parser.parseInfo(path);
+            songPath = info.path + "\\" + info.songFileName;
             Debug.log("Beatmap loaded, player ready");
         }else{
             Debug.log("Something went wrong ):");
@@ -47,13 +48,12 @@ public class BeatmapPlayer {
             playing = true;
             songPlayer = new OggPlayer(songPath);
             Utils.difficulty = difficulty;
-            BeatmapDiff diff = beatmap.diffs.get(difficulty);
-            DiffParser parser = new DiffParser();
-            parser.parse(diff);
-            Utils.colorA = diff.colorA;
-            Utils.colorB = diff.colorB;
+            DiffInfo diffInfo = info.diffs.get(difficulty);
+            Diff diff = Parser.parseDiff(diffInfo.diffFileName,info.bpm);
+            //Utils.colorA = diff.colorA;
+            //Utils.colorB = diff.colorB;
             songPlayer.start();
-            Utils.ledController.setEnvironment(beatmap.environmentName);
+            Utils.ledController.setEnvironment(info.environmentName);
             Utils.ledController.setActive(true);
             playEvents(diff,0.0);
             Debug.log("Playing Audioclip");
@@ -62,12 +62,12 @@ public class BeatmapPlayer {
         }
     }
 
-    public void playEvents(BeatmapDiff diff,double startTime){
+    public void playEvents(Diff diff,double startTime){
         Date date = new Date();
         timeA = date.getTime();
         Debug.log("Playing LightEvents");
-        ArrayList<LightEvent> events = new ArrayList<>(diff.events);
-        LightEvent event;
+        ArrayList<Event> events = new ArrayList<>(List.of(diff.events));
+        Event event;
         if(events.size() == 0) {Debug.log("no events"); return;}
         do{
             event = events.get(0);
@@ -78,12 +78,12 @@ public class BeatmapPlayer {
 
     public TimerTask nextEventTask;
 
-    public void nextEvent(ArrayList<LightEvent> events){
+    public void nextEvent(ArrayList<Event> events){
         if(!this.songPlayer.isAlive()){
             return;
         }
         if(events.size() > 0){
-            LightEvent event = events.get(0);
+            Event event = events.get(0);
             events.remove(0);
             Timer timer = new Timer();
             long songTime;

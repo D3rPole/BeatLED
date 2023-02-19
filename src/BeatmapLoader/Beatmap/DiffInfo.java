@@ -7,6 +7,6 @@ public class DiffInfo {
 
     @Override
     public String toString() {
-        return diffName + " " + diffSubName + " | " + diffFileName;
+        return diffName + " " + diffSubName;
     }
 }

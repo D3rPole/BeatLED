@@ -1,10 +1,11 @@
 package UI;
 
+import BeatmapLoader.Beatmap.DiffInfo;
+import BeatmapLoader.Beatmap.Event;
+import BeatmapLoader.Beatmap.Info;
 import BeatmapPlayer.BeatmapPlayer;
-import Beatsaber.Beatmap;
 import Beatsaber.BeatmapDiff;
 import Beatsaber.LightEvent;
-import Beatsaber.MapLoader;
 import Utils.Config;
 import Utils.Utils;
 import Utils.Debug;
@@ -17,13 +18,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
+import static BeatmapLoader.Parser.isBeatmap;
+import static BeatmapLoader.Parser.parseInfo;
+
 public class MainUI extends Component {
     private JPanel panelMain;
     private JList<Item> songlistList;
     private JScrollPane songlistPane;
     private JScrollPane diffPane;
     private JTextPane infoPane;
-    private JList<BeatmapDiff> diffList;
+    private JList<DiffInfo> diffList;
     private JButton playButton;
     private JButton stopButton;
     private JPanel ledControllerPanel;
@@ -111,7 +115,9 @@ public class MainUI extends Component {
         });
 
         sendCommandButton.addActionListener(e -> {
-            LightEvent event = new LightEvent(0, actionComboBox.getSelectedIndex(),((int)((Item)typeComboBox.getSelectedItem()).getObj()), new JSONObject());
+            Event event = new Event();
+            event.setValue(actionComboBox.getSelectedIndex());
+            event.type = ((int)((Item)typeComboBox.getSelectedItem()).getObj());
             Utils.ledController.lightEvent(event);
             Debug.log(event);
         });
@@ -149,9 +155,8 @@ public class MainUI extends Component {
         for (int i = 0; i < directoryList.length; i++) {
             Item item = new Item();
             item.setPath(path + "\\" + directoryList[i]);
-            MapLoader loader = new MapLoader();
-            if(loader.load(item.getPath())){
-                item.setObj(loader.getBeatmap());
+            if(isBeatmap(item.getPath())){
+                item.setObj(parseInfo(item.getPath()));
             }else{
                 item.setDisplayedText("-------------> (Folder)" + directoryList[i] + "<-------------");
             }
@@ -161,7 +166,6 @@ public class MainUI extends Component {
         songlistList.setListData(items);
         songlistList.addMouseListener(mouseAdapter);
     }
-
     public void log(Object o){
         if(logWindow == null) return;
         if(!logWindow.isOpen()) return;
@@ -173,28 +177,27 @@ public class MainUI extends Component {
         targetTpsLabel.setText("Target tps: " + target);
         tickTimeLabel.setText("t/µs: " + ms / 1000 + "µs");
     }
-    public static void resetList(JList<BeatmapDiff> list) {
-        DefaultListModel<BeatmapDiff> model = new DefaultListModel<BeatmapDiff>();
+    public static void resetList(JList<DiffInfo> list) {
+        DefaultListModel<DiffInfo> model = new DefaultListModel<DiffInfo>();
         list.setModel(model);
         list.repaint();
     }
-    void fillInfo(Beatmap beatmap){
+    void fillInfo(Info info){
         resetList(diffList);
 
         StyledDocument doc = infoPane.getStyledDocument();
         try {
-            String str = "Song name: " + beatmap.songName + "\n" + "Song author: " + beatmap.songAuthor;
+            String str = "Song name: " + info.songName + "\n" + "Song author: " + info.songAuthorName;
             doc.remove(0, doc.getLength());
             doc.insertString(doc.getLength(), str, doc.getStyle(""));
         } catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
-        BeatmapDiff[] diffs = beatmap.diffs.toArray(new BeatmapDiff[beatmap.diffs.size()]);
+        DiffInfo[] diffs = info.diffs.toArray(new DiffInfo[0]);
         diffList.setListData(diffs);
         diffList.addMouseListener(playDiff);
     }
-    Beatmap selected;
-
+    Info selected;
     MouseAdapter playDiff = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -220,8 +223,8 @@ public class MainUI extends Component {
                 loadBeatmapList(item.getPath());
             }
             if(item.obj!=null){
-                fillInfo((Beatmap) item.getObj());
-                selected = (Beatmap) item.getObj();
+                fillInfo((Info) item.getObj());
+                selected = (Info) item.getObj();
             }
         }
     };
