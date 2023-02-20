@@ -86,6 +86,9 @@ public class MainUI extends Component {
         actionComboBox.addItem(new Item("7",7));
         actionComboBox.addItem(new Item("8",8));
         actionComboBox.addItem(new Item("9",9));
+        actionComboBox.addItem(new Item("10",10));
+        actionComboBox.addItem(new Item("11",11));
+        actionComboBox.addItem(new Item("12",12));
 
 
         activeLEDControllerCheckbox.addActionListener(e -> {

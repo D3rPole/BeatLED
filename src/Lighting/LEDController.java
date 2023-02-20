@@ -79,25 +79,14 @@ public class LEDController {
             lastLoopTime = start;
 
             if (active) {
-                //Thread[] threads = new Thread[fixtures.length];
                 for (int i = 0; i < fixtures.length; i++) {
-                    //int finalI = i;
-                    //new Thread(() -> {
-                        fixtures[i].update();
-                    //}).start();
+                    fixtures[i].update();
                 }
 
-                //Thread[] threads = new Thread[fixtures.length];
                 for (int i = 0; i < Config.devices.size(); i++) {
-                    //int finalI = i;
-                    //new Thread(() -> {
-                        Config.devices.get(i).applyEffects(fixtures);
-                    //}).start();
+                    Config.devices.get(i).applyEffects(fixtures);
                 }
 
-                /*for (int i = 0; i < Config.devices.size(); i++) {
-                    Config.devices.get(i).applyEffects(fixtures);
-                }*/
                 send();
             }
             tickTime = System.nanoTime() - start;
@@ -158,10 +147,12 @@ public class LEDController {
             }
             return;
         }
-        if(event.valueAlt < 4){
+        if(event.valueAlt <= 4){
             fixture.setColor(Utils.colorA);
-        }else{
+        }else if(event.valueAlt <= 8){
             fixture.setColor(Utils.colorB);
+        }else{
+            fixture.setColor(Utils.white);
         }
     }
     void lightID(Event event){
@@ -189,10 +180,12 @@ public class LEDController {
             }
             return;
         }
-        if(event.valueAlt < 4){
+        if(event.valueAlt <= 4){
             fixture.setColor(lightIDs, Utils.colorA);
-        }else{
+        }else if(event.valueAlt <= 8){
             fixture.setColor(lightIDs, Utils.colorB);
+        }else{
+            fixture.setColor(lightIDs, Utils.white);
         }
     }
 

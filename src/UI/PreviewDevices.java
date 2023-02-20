@@ -2,7 +2,7 @@ package UI;
 
 import Lighting.Components.LEDstrip;
 import Utils.Config;
-import Utils.Utils;
+import Utils.Debug;
 
 import javax.swing.*;
 import java.awt.*;

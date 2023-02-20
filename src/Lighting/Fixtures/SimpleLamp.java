@@ -17,7 +17,7 @@ public class SimpleLamp extends Fixture{
             mul = -1;
             offset = size;
         }
-        for (int i = 0; i <= size; i++) {
+        for (int i = 0; i < size; i++) {
             ledStrip.setColorSingle(from + offset + i*mul,lights[(int)(((double)i / size)*(lights.length-1))].getCurrentColor());
         }
     }

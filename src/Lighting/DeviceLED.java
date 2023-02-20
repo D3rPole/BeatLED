@@ -52,11 +52,13 @@ public class DeviceLED {
     }
 
     public void applyEffects(Fixture[] fixtures){
-        ledStrip.clear();
+        LEDstrip strip = new LEDstrip(ledStrip.getLength());
+        //ledStrip.clear();
         for (int i = 0; i < effects.length; i++) {
             Effect effect = effects[i];
-            fixtures[effect.type].addToStrip(ledStrip,effect.fromLedIndex,effect.toLedIndex,effect.reversed);
+            fixtures[effect.type].addToStrip(strip,effect.fromLedIndex,effect.toLedIndex,effect.reversed);
         }
+        ledStrip.setStrip(strip);
     }
 
     @Override

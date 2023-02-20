@@ -1,10 +1,8 @@
 package BeatmapLoader.Beatmap;
 
-import Beatsaber.CustomData;
 import Lighting.Components.Color;
 import Utils.Config;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.json.JSONObject;
 
 public class Event {
     public long time;
@@ -28,21 +26,25 @@ public class Event {
 
     }
     public void setValue(int value){
-        if(value >= 2000000000){
-            color = colorFromInt(value);
+        valueAlt = value;
+        if(valueAlt >= 2000000000){
+            color = colorFromInt(valueAlt);
         }
-        switch(value){
+        switch(valueAlt){
             case 0:
                 this.value = Config.value.OFF;
                 break;
-            case 1, 5:
+            case 1, 5, 9:
                 this.value = Config.value.ON;
                 break;
-            case 2, 6:
+            case 2, 6, 10:
                 this.value = Config.value.FLASH;
                 break;
-            case 3, 7:
+            case 3, 7, 11:
                 this.value = Config.value.FADEOUT;
+                break;
+            case 4, 8, 12:
+                this.value = Config.value.TRANSITION;
                 break;
             default:
                 this.value = Config.value.OTHER;
@@ -65,23 +67,7 @@ public class Event {
         if(this.valueAlt >= 2000000000){
             color = colorFromInt(this.valueAlt);
         }
-        switch(this.valueAlt){
-            case 0:
-                this.value = Config.value.OFF;
-                break;
-            case 1, 5:
-                this.value = Config.value.ON;
-                break;
-            case 2, 6:
-                this.value = Config.value.FLASH;
-                break;
-            case 3, 7:
-                this.value = Config.value.FADEOUT;
-                break;
-            default:
-                this.value = Config.value.OTHER;
-                break;
-        }
+        setValue(valueAlt);
     }
     public void parseV3(long time, JsonNode eventNode){
         this.time = time;
@@ -99,23 +85,7 @@ public class Event {
         if(this.valueAlt >= 2000000000){
             color = colorFromInt(this.valueAlt);
         }
-        switch(this.valueAlt){
-            case 0:
-                this.value = Config.value.OFF;
-                break;
-            case 1, 5:
-                this.value = Config.value.ON;
-                break;
-            case 2, 6:
-                this.value = Config.value.FLASH;
-                break;
-            case 3, 7:
-                this.value = Config.value.FADEOUT;
-                break;
-            default:
-                this.value = Config.value.OTHER;
-                break;
-        }
+        setValue(valueAlt);
     }
     @Override
     public String toString() {

@@ -15,6 +15,13 @@ public class LEDstrip {
         }
     }
 
+    public void setStrip(LEDstrip strip){
+        if(strip.getLength() != this.getLength()) return;
+        for (int i = 0; i < this.getLength(); i++) {
+            this.strip[i] = strip.strip[i];
+        }
+    }
+
     public Color getLEDColor(int index){
         return strip[index].color;
     }
@@ -35,11 +42,12 @@ public class LEDstrip {
         strip[Math.floorMod(index,length)].addColor(color);
     }
 
-    public void placePoint(int index,int blur,Color color){
-        strip[Math.floorMod(index,length)].addColor(color);
-        for (int i = 1; i < blur; i++) {
-            strip[Math.floorMod(index + i,length)].addColor(color.brightness(10*blur / (i*i)));
-            strip[Math.floorMod(index - i,length)].addColor(color.brightness(10*blur / (i*i)));
+    public void placePoint(double position,int blur,Color color,int from,int to){
+        for (int i = (int) (position - blur); i < (position + blur); i++) {
+            if(i >= from && i <= to) {
+                double brightness = 100 * Math.pow((1 - Math.abs(i - position) / blur), 2);
+                strip[i].addColor(color.brightness((int) brightness));
+            }
         }
     }
     public void setColorSolid(Color color){

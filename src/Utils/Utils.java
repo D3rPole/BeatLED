@@ -18,6 +18,7 @@ public class Utils {
     public static int rightLaserSpeed;
     public static Color colorA = new Color(255,0,0);
     public static Color colorB = new Color(0,0,255);
+    public static Color white = new Color(255,255,255);
     public static double BPM;
     public static int difficulty;
 

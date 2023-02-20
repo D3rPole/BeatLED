@@ -4,15 +4,12 @@ import Lighting.DeviceLED;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import networking.Device;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.prefs.Preferences;
 
 public class Config {
-    public enum value{ OFF, ON, FLASH, FADEOUT, OTHER }
+    public enum value{ OFF, ON, FLASH, FADEOUT, TRANSITION, OTHER }
     public static int fadeoutTime = 500;
     public static int flashTime = 250;
     public static int onBrightness = 70;

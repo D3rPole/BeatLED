@@ -25,14 +25,14 @@ public class LaserRotating extends Fixture{
             laserSpeed = Utils.rightLaserSpeed;
         }
 
-        angle = (java.lang.System.currentTimeMillis() * laserSpeed / 200)%360;
+        angle = (java.lang.System.currentTimeMillis() * laserSpeed / 100)%360;
         double radian = angle / 180.0 * Math.PI;
         int size = to - from;
         int mul = 1;
         if(renderBackwards) mul = -1;
         for (int i = 0; i < lasers; i++) {
-            double sin = (Math.sin(radian * mul + (double)i / lasers * 2 * Math.PI) + 1) / 2 * size;
-            ledStrip.placePoint(from + (int)sin,Math.max(1,size / 5),lights[i% lights.length].getCurrentColor());
+            double sin = (Math.sin(radian + (double)i / lasers * Math.PI)* mul + 1) / 2 * size;
+            ledStrip.placePoint(from + sin,Math.max(1,size / 5),lights[i% lights.length].getCurrentColor(),from,to);
         }
     }
 }
