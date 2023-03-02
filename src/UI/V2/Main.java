@@ -4,10 +4,10 @@ import javax.swing.*;
 
 public class Main {
 
-    private Controller controller;
-    private HardwareManager hardwareManager;
-    private Settings settings;
-    private SongList songList;
+    Controller controller;
+    HardwareManager hardwareManager;
+    Settings settings;
+    SongList songList;
 
     private JTabbedPane tabbedPane;
     private JPanel mainPanel;
