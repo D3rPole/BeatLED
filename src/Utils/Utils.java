@@ -11,7 +11,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Utils {
-    public static MainUI ui;
+    public static UI.V2.Main ui;
     public static LEDController ledController;
     public static BeatmapPlayer beatmapPlayer;
     public static int leftLaserSpeed;

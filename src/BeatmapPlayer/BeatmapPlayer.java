@@ -4,8 +4,6 @@ import BeatmapLoader.Beatmap.DiffInfo;
 import BeatmapLoader.Beatmap.Event;
 import BeatmapLoader.Beatmap.Info;
 import BeatmapLoader.Parser;
-import Beatsaber.BeatmapDiff;
-import Beatsaber.LightEvent;
 import Utils.Debug;
 import Utils.Utils;
 

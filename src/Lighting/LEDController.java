@@ -1,26 +1,20 @@
 package Lighting;
 
 import BeatmapLoader.Beatmap.Event;
-import Beatsaber.LightEvent;
 import Lighting.Components.LEDstrip;
-import Lighting.DeviceLED;
-import Lighting.Effect;
-import Utils.*;
 import Lighting.Fixtures.Fixture;
 import Lighting.Fixtures.LaserRotating;
 import Lighting.Fixtures.RingRotating;
 import Lighting.Fixtures.SimpleLamp;
+import Utils.Config;
+import Utils.Debug;
+import Utils.Utils;
 import networking.Device;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketException;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.sql.Time;
-import java.util.Date;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
@@ -122,7 +116,7 @@ public class LEDController {
         }else{
             lightID(event);
         }
-        Utils.ui.log(event);
+        //Utils.ui.log(event);
     }
     void all(Event event){
         Fixture fixture = fixtures[event.type];
@@ -195,6 +189,5 @@ public class LEDController {
 
     public void setActive(boolean active) {
         this.active = active;
-        Utils.ui.setActive(active);
     }
 }

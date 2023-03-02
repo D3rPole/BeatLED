@@ -56,7 +56,8 @@ public class Config {
         String json = prefs.get("devices", "");
         try {
             ObjectMapper mapper = new ObjectMapper();
-            devices = mapper.readValue(json, new TypeReference<ArrayList<DeviceLED>>(){});
+            devices = mapper.readValue(json, new TypeReference<>() {
+            });
             for(DeviceLED device : devices){
                 Debug.log("    " + device);
                 device.init();

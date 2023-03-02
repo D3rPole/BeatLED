@@ -1,7 +1,5 @@
 package BeatmapLoader.Beatmap;
 
-import Beatsaber.LightEvent;
-
 public class Diff {
     public double BPM;
     public String version;

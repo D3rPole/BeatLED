@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) {
         Config.load();
         FlatDarculaLaf.setup();
-        Utils.ui = new MainUI();
+        Utils.ui = new UI.V2.Main();//new MainUI();
         Utils.beatmapPlayer = new BeatmapPlayer();
         Thread thread = new Thread(() -> {
             Utils.ledController = new LEDController();

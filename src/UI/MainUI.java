@@ -4,12 +4,9 @@ import BeatmapLoader.Beatmap.DiffInfo;
 import BeatmapLoader.Beatmap.Event;
 import BeatmapLoader.Beatmap.Info;
 import BeatmapPlayer.BeatmapPlayer;
-import Beatsaber.BeatmapDiff;
-import Beatsaber.LightEvent;
 import Utils.Config;
 import Utils.Utils;
 import Utils.Debug;
-import org.json.JSONObject;
 
 import javax.swing.*;
 import javax.swing.text.*;
