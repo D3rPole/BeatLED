@@ -27,11 +27,7 @@ public class Controller {
     private Preview preview;
 
     Controller(){
-        GridLayout layout = new GridLayout(1,1);
-        previewPanel.setLayout(layout);
-
-        preview = new Preview();
-        previewPanel.add(preview.previewPanel);
+        updatePreview();
 
         Utils.setEnabledRecursive(infoPanel,false);
         Utils.setEnabledRecursive(manualControlPanel,false);
@@ -60,6 +56,14 @@ public class Controller {
         });
 
         setupManualControl();
+    }
+
+    void updatePreview(){
+        GridLayout layout = new GridLayout(1,1);
+        previewPanel.setLayout(layout);
+
+        preview = new Preview();
+        previewPanel.add(preview.previewPanel);
     }
 
     void setupManualControl(){

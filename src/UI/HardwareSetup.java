@@ -84,6 +84,7 @@ public class HardwareSetup {
 
             try {
                 Config.devices.set(selectedIndex,new DeviceLED(nameTextField.getText(), ipTextField.getText(), (int) portSpinner.getValue(), (int) ledCountSpinner.getValue()));
+                Config.save();
             } catch (SocketException | UnknownHostException ex) {
                 JOptionPane.showMessageDialog(null, ex);
                 return;

@@ -60,7 +60,11 @@ public class Config {
             });
             for(DeviceLED device : devices){
                 Debug.log("    " + device);
-                device.init();
+                try {
+                    device.init();
+                }catch (Exception e){
+                    Debug.log(e);
+                }
             }
 
         } catch (JsonProcessingException e) {
