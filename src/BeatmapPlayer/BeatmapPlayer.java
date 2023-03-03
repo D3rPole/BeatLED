@@ -48,8 +48,6 @@ public class BeatmapPlayer {
             Utils.difficulty = difficulty;
             DiffInfo diffInfo = info.diffs.get(difficulty);
             Diff diff = Parser.parseDiff(diffInfo.diffFileName,info.bpm);
-            //Utils.colorA = diff.colorA;
-            //Utils.colorB = diff.colorB;
             songPlayer.start();
             Utils.ledController.setEnvironment(info.environmentName);
             Utils.ledController.setActive(true);

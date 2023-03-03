@@ -4,10 +4,11 @@ import javax.swing.*;
 
 public class Main {
 
-    Controller controller;
-    HardwareManager hardwareManager;
-    Settings settings;
-    SongList songList;
+    public Controller controller;
+    public HardwareManager hardwareManager;
+    public Settings settings;
+    public SongList songList;
+    public Logs logs;
 
     private JTabbedPane tabbedPane;
     private JPanel mainPanel;
@@ -21,6 +22,7 @@ public class Main {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
+        logs = new Logs();
         songList = new SongList();
         controller = new Controller();
         hardwareManager = new HardwareManager();
@@ -30,9 +32,6 @@ public class Main {
         tabbedPane.addTab("LED controller", controller.panel);
         tabbedPane.addTab("Hardware manager", hardwareManager.panel);
         tabbedPane.addTab("Settings", settings.panel);
-    }
-
-    public void updateTPS(long TPS, long tickTime, long Target){
-
+        tabbedPane.addTab("Logs", logs.panel);
     }
 }

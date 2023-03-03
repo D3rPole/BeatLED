@@ -1,4 +1,4 @@
-package UI;
+package UI.V2;
 
 public class Item {
     private String path;
@@ -6,7 +6,7 @@ public class Item {
     public Object obj;
 
     Item(){}
-    public Item(String displayedText, Object obj){
+    Item(String displayedText, Object obj){
         this.displayedText = displayedText;
         this.obj = obj;
     }

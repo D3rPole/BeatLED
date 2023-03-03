@@ -10,14 +10,21 @@ public class HardwareManager {
     private JButton removeEffectButton;
     private JButton addDeviceButton;
     private JButton removeDeviceButton;
-    private JTextField textField1;
-    private JSpinner spinner1;
-    private JSpinner spinner2;
-    private JTextField textField2;
-    private JTextField nameTextField;
-    private JComboBox comboBox1;
-    private JSpinner spinner3;
-    private JSpinner spinner4;
+    private JTextField deviceNameTextField;
+    private JSpinner deviceSizeSpinner;
+    private JSpinner devicePortSpinner;
+    private JTextField deviceIpTextField;
+    private JTextField effectNameTextField;
+    private JComboBox effectTypeComboBox;
+    private JSpinner effectFromSpinner;
+    private JSpinner effectToSpinner;
     private JButton applyToEffectButton;
     private JButton applyToDeviceButton;
+    private JPanel deviceInfoPanel;
+    private JPanel effectInfoPanel;
+
+    HardwareManager(){
+        Utils.Utils.setEnabledRecursive(deviceInfoPanel,false);
+        Utils.Utils.setEnabledRecursive(effectInfoPanel,false);
+    }
 }

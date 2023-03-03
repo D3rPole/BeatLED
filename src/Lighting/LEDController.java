@@ -84,7 +84,7 @@ public class LEDController {
                 send();
             }
             tickTime = System.nanoTime() - start;
-            Utils.ui.updateTPS(TPS,tickTime,TARGET_FPS);
+            Utils.ui.controller.updateFPS(TPS,tickTime,TARGET_FPS);
             try {
                 TimeUnit.NANOSECONDS.sleep(OPTIMAL_TIME - tickTime);
             } catch (Exception e) {}
@@ -189,5 +189,6 @@ public class LEDController {
 
     public void setActive(boolean active) {
         this.active = active;
+        Utils.ui.controller.setActiveCheckBox(active);
     }
 }

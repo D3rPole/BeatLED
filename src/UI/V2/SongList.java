@@ -41,6 +41,8 @@ public class SongList {
             Utils.beatmapPlayer.load(info.path);
             Utils.beatmapPlayer.play(diffList.getSelectedIndex());
         });
+
+        stopButton.addActionListener(e -> Utils.beatmapPlayer.stop());
     }
 
     public void setInfo(Info info){
@@ -52,6 +54,7 @@ public class SongList {
 
         DiffInfo[] diffInfos = info.diffs.toArray(new DiffInfo[0]);
         diffList.setListData(diffInfos);
+        diffList.setSelectedIndex(0);
     }
 
     public void deselectAll(){
