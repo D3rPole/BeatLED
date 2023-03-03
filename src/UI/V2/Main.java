@@ -1,6 +1,7 @@
 package UI.V2;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Main {
 
@@ -17,7 +18,8 @@ public class Main {
         JFrame frame = new JFrame();
         frame.setContentPane(mainPanel);
         frame.setTitle("BeatLED");
-        frame.setSize(1200,600);
+        frame.setSize(1000,600);
+        frame.setMinimumSize(new Dimension(800,600));
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);

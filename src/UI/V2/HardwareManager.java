@@ -29,12 +29,15 @@ public class HardwareManager {
     private JButton applyToDeviceButton;
     private JPanel deviceInfoPanel;
     private JPanel effectInfoPanel;
+    private JCheckBox effectMirroredCheckBox;
 
     private DeviceLED deviceLED;
 
     HardwareManager(){
         Utils.setEnabledRecursive(effectInfoPanel,false);
         removeDeviceButton.setEnabled(false);
+        removeEffectButton.setEnabled(false);
+        applyToEffectButton.setEnabled(false);
 
         updateDeviceList();
 
@@ -58,16 +61,25 @@ public class HardwareManager {
             devicePortSpinner.setValue(deviceLED.device.getPort());
             deviceIpTextField.setText(deviceLED.device.getIp());
             deviceSizeSpinner.setValue(deviceLED.ledStrip.getLength());
+
+            applyToEffectButton.setEnabled(false);
         });
 
         effectsList.addListSelectionListener(e -> {
-            if(effectsList.getSelectedValue() == null) return;
+            if(effectsList.getSelectedIndex() == -1){
+                removeEffectButton.setEnabled(false);
+                applyToEffectButton.setEnabled(false);
+                return;
+            }
+            removeEffectButton.setEnabled(true);
+            applyToEffectButton.setEnabled(true);
             Effect effect = effectsList.getSelectedValue();
 
             effectNameTextField.setText(effect.name);
             effectFromSpinner.setValue(effect.fromLedIndex);
             effectToSpinner.setValue(effect.toLedIndex);
             effectTypeComboBox.setSelectedIndex(effect.type);
+            effectMirroredCheckBox.setSelected(effect.reversed);
         });
 
         applyToDeviceButton.addActionListener(e -> {
@@ -102,6 +114,47 @@ public class HardwareManager {
             updateDeviceList();
             removeDeviceButton.setEnabled(false);
         });
+
+        applyToEffectButton.addActionListener(e -> {
+            if(deviceLED == null) return;
+            if(effectsList.getSelectedIndex() == -1) return;
+            if(verifyEffectData()){
+                deviceLED.effects[effectsList.getSelectedIndex()] = new Effect(effectNameTextField.getText(),effectTypeComboBox.getSelectedIndex(),(int)effectFromSpinner.getValue(),(int)effectToSpinner.getValue(),effectMirroredCheckBox.isSelected());
+                updateEffectList();
+                Config.save();
+            }
+        });
+        addEffectButton.addActionListener(e -> {
+            if(deviceLED == null) return;
+            if(verifyEffectData()){
+                deviceLED.addEffect(effectNameTextField.getText(),effectTypeComboBox.getSelectedIndex(),(int)effectFromSpinner.getValue(),(int)effectToSpinner.getValue(),effectMirroredCheckBox.isSelected());
+                updateEffectList();
+                Config.save();
+            }
+        });
+        removeEffectButton.addActionListener(e -> {
+            if(deviceLED == null) return;
+            if(effectsList.getSelectedIndex() == -1) return;
+            deviceLED.removeEffect(effectsList.getSelectedIndex());
+            updateEffectList();
+            Config.save();
+        });
+    }
+
+    boolean verifyEffectData(){
+        if(effectNameTextField.getText().equals("")){
+            JOptionPane.showMessageDialog(null, "Effect name can't be empty");
+            return false;
+        }
+        if((int)effectFromSpinner.getValue() < 0){
+            JOptionPane.showMessageDialog(null, "First LED index can't be negative");
+            return false;
+        }
+        if((int)effectToSpinner.getValue() < (int)effectFromSpinner.getValue()){
+            JOptionPane.showMessageDialog(null, "Last LED index can't be lower then Start LED index");
+            return false;
+        }
+        return true;
     }
 
     boolean verifyDeviceData(){
