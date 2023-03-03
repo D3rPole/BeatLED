@@ -59,6 +59,7 @@ public class Controller {
     }
 
     void updatePreview(){
+        previewPanel.removeAll();
         GridLayout layout = new GridLayout(1,1);
         previewPanel.setLayout(layout);
 

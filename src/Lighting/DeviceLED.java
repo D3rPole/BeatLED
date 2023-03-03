@@ -27,6 +27,11 @@ public class DeviceLED {
         ledStrip.initStrip();
         device.initDevice();
     }
+    public void changeDevice(String name,String ip, int port, int ledCount) throws SocketException, UnknownHostException {
+        this.name = name;
+        device = new Device(ip,port);
+        ledStrip = new LEDstrip(ledCount);
+    }
     public void addEffect(String name,int type, int from, int to, boolean reversed){
         Effect effect = new Effect(name,type,from,to,reversed);
         int newLength = effects.length + 1;
@@ -53,7 +58,6 @@ public class DeviceLED {
 
     public void applyEffects(Fixture[] fixtures){
         LEDstrip strip = new LEDstrip(ledStrip.getLength());
-        //ledStrip.clear();
         for (int i = 0; i < effects.length; i++) {
             Effect effect = effects[i];
             fixtures[effect.type].addToStrip(strip,effect.fromLedIndex,effect.toLedIndex,effect.reversed);
