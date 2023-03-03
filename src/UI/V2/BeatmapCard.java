@@ -1,7 +1,7 @@
 package UI.V2;
 
 import BeatmapLoader.Beatmap.Info;
-import Utils.Config;
+import UI.V2.CustomComponents.ImagePanel;
 import Utils.Utils;
 
 import javax.swing.*;

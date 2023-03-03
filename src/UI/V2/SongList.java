@@ -3,11 +3,14 @@ package UI.V2;
 import BeatmapLoader.Beatmap.DiffInfo;
 import BeatmapLoader.Beatmap.Info;
 import BeatmapLoader.Parser;
+import UI.V2.CustomComponents.ScrollPaneTouch;
 import Utils.Config;
 import Utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 
