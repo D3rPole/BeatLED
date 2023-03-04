@@ -116,7 +116,7 @@ public class LEDController {
         }else{
             lightID(event);
         }
-        //Utils.ui.log(event);
+        Utils.ui.logs.logEvent(event);
     }
     void all(Event event){
         Fixture fixture = fixtures[event.type];

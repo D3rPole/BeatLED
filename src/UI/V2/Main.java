@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Main {
-
     public Controller controller;
     public HardwareManager hardwareManager;
     public Settings settings;

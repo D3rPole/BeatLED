@@ -4,8 +4,7 @@ import BeatmapLoader.Beatmap.DiffInfo;
 import BeatmapLoader.Beatmap.Info;
 import BeatmapLoader.Parser;
 import UI.V2.CustomComponents.ScrollPaneTouch;
-import Utils.Config;
-import Utils.Utils;
+import Utils.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,6 +28,7 @@ public class SongList {
     private JLabel chromaLabel;
 
     ArrayList<BeatmapCard> beatmapsCards;
+    ArrayList<FolderCard> folderCards;
 
     Info info;
 
@@ -37,7 +37,7 @@ public class SongList {
         scrollBar.setUnitIncrement(10);
         scrollBar.setBlockIncrement(50);
 
-        updateSongList();
+        updateSongList(Config.beatmapFolder);
 
         playButton.addActionListener(e ->{
             if(diffList.getSelectedIndex() == -1) return;
@@ -61,14 +61,17 @@ public class SongList {
     }
 
     public void deselectAll(){
+        for (int i = 0; i < folderCards.size(); i++) {
+            folderCards.get(i).deselect();
+        }
         for (int i = 0; i < beatmapsCards.size(); i++) {
             beatmapsCards.get(i).deselect();
         }
     }
 
-    public void updateSongList(){
+    public void updateSongList(String path){
+        Debug.log(path);
         songListPanel.removeAll();
-        String path = Config.beatmapFolder;
         File directoryPath = new File(path);
         if(!directoryPath.exists()){
             return;
@@ -77,19 +80,54 @@ public class SongList {
         String[] directoryList = directoryPath.list();
         assert directoryList != null;
 
+        folderCards = new ArrayList<>();
         beatmapsCards = new ArrayList<>();
+
+        folderCards.add(new FolderCard(directoryPath.getParent(), directoryPath.getParent(),true));
+        Thread[] threads = new Thread[directoryList.length];
+
         for (int i = 0; i < directoryList.length; i++) {
-            Info info = Parser.parseInfo(path + "\\" +  directoryList[i]);
-            if(info != null){
-                beatmapsCards.add(new BeatmapCard(info));
+            int finalI = i;
+            threads[i] = new Thread(() -> {
+                Info info = Parser.parseInfo(path + "\\" + directoryList[finalI]);
+                if (info != null) {
+                    beatmapsCards.add(new BeatmapCard(info));
+                } else if (directoryPath.isDirectory()) {
+                    folderCards.add(new FolderCard(path + "\\" + directoryList[finalI], directoryList[finalI],false));
+                }
+            });
+            threads[i].start();
+        }
+        for (Thread t : threads) {
+            try {
+                t.join(); // Wait for each thread to complete
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
-        GridLayout layout = new GridLayout(beatmapsCards.size(),1);
+        //GridLayout layout = new GridLayout(beatmapsCards.size() + folderCards.size() + 1,1);
+        GridBagLayout layout = new GridBagLayout();
         songListPanel.setLayout(layout);
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.gridy = 0;
+        c.weightx = 1;
+        c.weighty = 0;
 
-        for (int i = 0; i < beatmapsCards.size(); i++) {
-            songListPanel.add(beatmapsCards.get(i).beatmapPanel);
+        for (FolderCard folderCard : folderCards) {
+            c.gridy++;
+            songListPanel.add(folderCard.folderCardPanel,c);
         }
+        for (BeatmapCard beatmapsCard : beatmapsCards) {
+            c.gridy++;
+            songListPanel.add(beatmapsCard.beatmapPanel,c);
+        }
+
+        c.gridy++;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weighty = 1;
+        songListPanel.add(new JPanel(),c);
+        Debug.log("list reloaded");
     }
 }

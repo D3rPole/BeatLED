@@ -27,7 +27,7 @@ public class Device {
     }
 
     public void send(byte[] buffer) throws IOException, InvalidParameterException {
-        if(buffer.length%3 != 0) throw new InvalidParameterException("buffer length should be divisible by 3, since R,G,B,R,G,B....");
+        if(buffer.length%3 != 0) throw new InvalidParameterException("buffer length should be divisible by 3, cause R,G,B,R,G,B....");
         byte[] data = new byte[buffer.length + 2];
         data[0] = 2;
         data[1] = 1;
