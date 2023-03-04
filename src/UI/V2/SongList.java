@@ -3,13 +3,10 @@ package UI.V2;
 import BeatmapLoader.Beatmap.DiffInfo;
 import BeatmapLoader.Beatmap.Info;
 import BeatmapLoader.Parser;
-import UI.V2.CustomComponents.ScrollPaneTouch;
 import Utils.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -26,6 +23,7 @@ public class SongList {
     private JLabel mapperLabel;
     private JLabel bpmLabel;
     private JLabel chromaLabel;
+    private JButton backToBeatmapFolderButton;
 
     ArrayList<BeatmapCard> beatmapsCards;
     ArrayList<FolderCard> folderCards;
@@ -46,6 +44,8 @@ public class SongList {
         });
 
         stopButton.addActionListener(e -> Utils.beatmapPlayer.stop());
+
+        backToBeatmapFolderButton.addActionListener(e -> updateSongList(Config.beatmapFolder));
     }
 
     public void setInfo(Info info){
