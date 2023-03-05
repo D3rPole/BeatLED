@@ -1,40 +1,34 @@
 package UI;
 
+import Utils.Utils;
+import Utils.Debug;
+
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
-
-import static java.awt.MouseInfo.getPointerInfo;
+import java.awt.*;
 
 public class Logs {
+    JPanel panel;
+    private JButton clearLogsButton;
+    private JCheckBox logLightEventsCheckBox;
+
     private JTextPane logs;
-    private JButton clear;
-    private JPanel logPanel;
     private JScrollPane logScroll;
 
-    private final JFrame frame;
+    Logs(){
+        logs.setFont(new Font("Consolas",Font.PLAIN, 12));
 
-    Logs() {
-        frame = new JFrame();
-        frame.setContentPane(logPanel);
-        frame.setTitle("BeatLED | Event logs");
-        frame.setSize(800,600);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setVisible(true);
-
-        clear.addActionListener(e -> {
+        clearLogsButton.addActionListener(e -> {
+            StyledDocument doc = logs.getStyledDocument();
             try {
-                StyledDocument doc = logs.getStyledDocument();
-                doc.remove(0,doc.getLength());
+                doc.remove(0, doc.getLength());
             } catch (BadLocationException ex) {
-                throw new RuntimeException(ex);
+                Debug.log(ex);
             }
         });
     }
-    public boolean isOpen(){
-        return frame.isVisible();
-    }
+
     public void log(Object o){
         SwingUtilities.invokeLater(() -> {
             StyledDocument doc = logs.getStyledDocument();
@@ -57,5 +51,22 @@ public class Logs {
             JScrollBar bar = logScroll.getVerticalScrollBar();
             bar.setValue(bar.getMaximum());
         });
+    }
+
+    public void logEvent(Object o){
+        if(!logLightEventsCheckBox.isSelected()) return;
+        try {
+            String className = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName()).toString();
+            String print;
+            String prefix = "(" + className + ")";
+            if(o == null) print = "null";
+            else print = o.toString();
+            for (int i = 0; i < (40 - className.length()); i++) {
+                prefix += " ";
+            }
+            if(Utils.ui != null) log(prefix + print);
+        }catch(ClassNotFoundException e){
+            System.out.println(e);
+        }
     }
 }

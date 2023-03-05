@@ -1,9 +1,6 @@
 package BeatmapLoader;
 
-import BeatmapLoader.Beatmap.Diff;
-import BeatmapLoader.Beatmap.DiffInfo;
-import BeatmapLoader.Beatmap.Event;
-import BeatmapLoader.Beatmap.Info;
+import BeatmapLoader.Beatmap.*;
 import Utils.Debug;
 import Utils.Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,6 +38,11 @@ public class Parser {
 
         JsonNode diffNode = rootNode.get("_difficultyBeatmapSets");
 
+        if(!new File(path + "\\" + info.songFileName).exists()){ //Sometimes audio filename is different in info.dat then in beatmap folder... idk what beatsaber does to fix it
+            Debug.log(info.songFileName + " does not exist. Searching audio file");
+            info.songFileName = findAudio(path); //just itterates through beatmap folder till it finds .egg or .ogg
+        }
+
         info.diffs = new ArrayList<>();
         for (int i = 0; i < diffNode.size(); i++) {
             String diffSubName = diffNode.get(i).get("_beatmapCharacteristicName").asText();
@@ -54,6 +56,44 @@ public class Parser {
             }
         }
         return info;
+    }
+
+    static String findAudio(String path){
+        File directoryFile = new File(path);
+        String[] directoryList = directoryFile.list();
+        assert directoryList != null;
+        for (int i = 0; i < directoryList.length; i++) {
+            String fileName = directoryList[i];
+            if(fileName.contains(".egg") || fileName.contains(".ogg")){
+                Debug.log("Found " + fileName);
+                return fileName;
+            }
+        }
+        return "";
+    }
+
+    public static SimpleInfo parseSimpleInfo(String path){
+        File infoFile = new File(path + "\\info.dat");
+        if(!infoFile.exists()) return null;
+
+        SimpleInfo simpleInfo = new SimpleInfo();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = null;
+        try {
+            rootNode = objectMapper.readTree(Utils.readFile(infoFile));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        simpleInfo.path = path;
+        simpleInfo.bpm = rootNode.get("_beatsPerMinute").asDouble();
+        simpleInfo.songAuthorName = rootNode.get("_songAuthorName").asText();
+        simpleInfo.songName = rootNode.get("_songName").asText();
+        simpleInfo.songSubName = rootNode.get("_songSubName").asText();
+        simpleInfo.levelAuthorName = rootNode.get("_levelAuthorName").asText();
+        simpleInfo.coverImageFileName = rootNode.get("_coverImageFilename").asText();
+
+        return simpleInfo;
     }
 
     public static boolean isBeatmap(String path){

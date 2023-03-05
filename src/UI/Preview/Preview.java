@@ -1,4 +1,4 @@
-package UI.V2.Preview;
+package UI.Preview;
 
 import Utils.Config;
 

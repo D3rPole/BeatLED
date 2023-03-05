@@ -1,17 +1,13 @@
-package UI.V2;
+package UI;
 
-import UI.V2.CustomComponents.ImagePanel;
+import UI.CustomComponents.ImagePanel;
 import Utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
-
-import Utils.Debug;
 
 public class FolderCard {
     JPanel folderCardPanel;
@@ -20,6 +16,8 @@ public class FolderCard {
     private JLabel typeLabel;
 
     private String path;
+
+    ImagePanel imgPanel;
 
     boolean isSelected = false;
 
@@ -34,8 +32,8 @@ public class FolderCard {
             }else {
                 imgPath = getClass().getResource("/Assets/Directory.png").getPath().replace("%20", " ");
             }
-            ImagePanel img = new ImagePanel(imgPath);
-            imagePanel.add(img);
+            imgPanel = new ImagePanel(imgPath);
+            imagePanel.add(imgPanel);
         } catch (IOException e) {
 
         }
@@ -51,7 +49,7 @@ public class FolderCard {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(isSelected){
-                    Utils.ui.songList.updateSongList(path);
+                    Utils.ui.songList.updateSongList(path,"");
                 }
                 Utils.ui.songList.deselectAll();
                 folderCardPanel.setBorder(BorderFactory.createBevelBorder(1));

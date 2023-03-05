@@ -1,7 +1,7 @@
-package UI.V2;
+package UI;
 
 import BeatmapLoader.Beatmap.Event;
-import UI.V2.Preview.Preview;
+import UI.Preview.Preview;
 import Utils.*;
 
 import javax.swing.*;
@@ -50,7 +50,7 @@ public class Controller {
         sendCommandButton.addActionListener(e -> {
             BeatmapLoader.Beatmap.Event event = new Event();
             event.setValue((int)valueSpinner.getValue());
-            event.type = ((int)((UI.V2.Item)typeComboBox.getSelectedItem()).getObj());
+            event.type = ((int)((Item)typeComboBox.getSelectedItem()).getObj());
             Utils.ledController.lightEvent(event);
             Debug.log(event);
         });

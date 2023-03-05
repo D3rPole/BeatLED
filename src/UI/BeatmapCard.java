@@ -1,13 +1,12 @@
-package UI.V2;
+package UI;
 
-import BeatmapLoader.Beatmap.Info;
-import UI.V2.CustomComponents.ImagePanel;
-import Utils.Utils;
+import BeatmapLoader.Beatmap.SimpleInfo;
+import UI.CustomComponents.ImagePanel;
+import Utils.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.IOException;
 
 public class BeatmapCard {
@@ -17,22 +16,24 @@ public class BeatmapCard {
     private JLabel artistLabel;
     private JLabel mapperLabel;
 
-    private Info info;
+    ImagePanel imgPanel;
 
-    BeatmapCard(Info info){
-        this.info = info;
+    private final SimpleInfo simpleInfo;
+
+    BeatmapCard(SimpleInfo simpleInfo){
+        this.simpleInfo = simpleInfo;
         try {
             GridLayout layout = new GridLayout(1,1);
             imagePanel.setLayout(layout);
-            ImagePanel img = new ImagePanel(info.path + "\\" + info.coverImageFileName);
-            imagePanel.add(img);
-        } catch (IOException e) {
+            imgPanel = new ImagePanel(simpleInfo.path + "\\" + simpleInfo.coverImageFileName);
+            imagePanel.add(imgPanel);
+        } catch (IOException ignored) {
 
         }
 
-        nameLabel.setText(info.songName + " - " + info.songSubName);
-        artistLabel.setText(info.songAuthorName);
-        mapperLabel.setText(info.levelAuthorName);
+        nameLabel.setText(simpleInfo.songName + " - " + simpleInfo.songSubName);
+        artistLabel.setText(simpleInfo.songAuthorName);
+        mapperLabel.setText(simpleInfo.levelAuthorName);
         init();
     }
     void init(){
@@ -41,7 +42,7 @@ public class BeatmapCard {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Utils.ui.songList.deselectAll();
-                Utils.ui.songList.setInfo(info);
+                Utils.ui.songList.setInfo(simpleInfo);
                 beatmapPanel.setBorder(BorderFactory.createBevelBorder(1));
             }
         });

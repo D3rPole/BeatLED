@@ -1,13 +1,8 @@
 
-import BeatmapLoader.Beatmap.Info;
-import BeatmapLoader.Parser;
 import BeatmapPlayer.BeatmapPlayer;
 import Lighting.LEDController;
-import UI.MainUI;
 import Utils.Utils;
 import Utils.Config;
-import Utils.Debug;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
 public class Main {
@@ -15,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         Config.load();
         FlatDarculaLaf.setup();
-        Utils.ui = new UI.V2.Main();
+        Utils.ui = new UI.Main();
         Utils.beatmapPlayer = new BeatmapPlayer();
         Thread thread = new Thread(() -> {
             Utils.ledController = new LEDController();

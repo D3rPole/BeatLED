@@ -3,74 +3,65 @@ package UI;
 import Utils.Config;
 
 import javax.swing.*;
-
-import static java.awt.MouseInfo.getPointerInfo;
+import java.io.File;
 
 public class Settings {
-    private JPanel settingsPanel;
-    private JFormattedTextField path;
-    private JButton explore;
-    private JButton ok;
-    private JButton apply;
-    private JSpinner fadeout;
-    private JSpinner flash;
-    private JSpinner onBrightness;
+    JPanel panel;
+    private JButton applySettingsButton;
+    private JButton resetSettingsButton;
+    private JTextField beatmapFolderPathTextField;
+    private JButton openExplorerButton;
+    private JSpinner fadeoutTimeSpinner;
+    private JSpinner flashTimeSpinner;
+    private JSpinner onBrightnessSpinner;
 
     Settings(){
-        JFrame frame = new JFrame();
-        frame.setContentPane(settingsPanel);
-        frame.setTitle("BeatLED | Settings");
-        frame.setSize(600,400);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setVisible(true);
+        beatmapFolderPathTextField.setText(Config.beatmapFolder);
+        fadeoutTimeSpinner.setValue(Config.fadeoutTime);
+        flashTimeSpinner.setValue(Config.flashTime);
+        onBrightnessSpinner.setValue(Config.onBrightness);
 
-        path.setValue(Config.beatmapFolder);
-        fadeout.setValue(Config.fadeoutTime);
-        flash.setValue(Config.flashTime);
-        onBrightness.setValue(Config.onBrightness);
+        applySettingsButton.addActionListener(e -> {
+            if(!verifySettings()) return;
+            Config.beatmapFolder = beatmapFolderPathTextField.getText();
+            Config.fadeoutTime = (int)fadeoutTimeSpinner.getValue();
+            Config.flashTime = (int)flashTimeSpinner.getValue();
+            Config.onBrightness = (int)onBrightnessSpinner.getValue();
+            Config.save();
+        });
 
-        explore.addActionListener(e -> {
+        openExplorerButton.addActionListener(e -> {
             JFileChooser explorer = new JFileChooser();
             explorer.setDialogTitle("Choose Beatmap Folder");
             explorer.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int err = explorer.showOpenDialog(null);
             if(err == JFileChooser.APPROVE_OPTION){
-                path.setValue(explorer.getSelectedFile().toPath());
+                beatmapFolderPathTextField.setText(explorer.getSelectedFile().getPath());
+                Config.beatmapFolder = explorer.getSelectedFile().getPath();
+                Config.save();
             }else{
-                path.setValue("");
+                beatmapFolderPathTextField.setText("");
             }
-            if(isSettingsChanged()) apply.setEnabled(true);
         });
-
-        fadeout.addChangeListener(e -> {if(isSettingsChanged()) apply.setEnabled(true);});
-        flash.addChangeListener(e -> {if(isSettingsChanged()) apply.setEnabled(true);});
-        onBrightness.addChangeListener(e -> {if(isSettingsChanged()) apply.setEnabled(true);});
-
-        ok.addActionListener(e -> {
-            apply();
-            frame.dispose();
-        });
-
-        apply.addActionListener(e -> apply());
     }
 
-    boolean isSettingsChanged(){
-        if(!Config.beatmapFolder.equals(path.getValue())) return true;
-        if(Config.fadeoutTime != (int)fadeout.getValue()) return true;
-        if(Config.onBrightness != (int) onBrightness.getValue()) return true;
-        if(Config.flashTime != (int)flash.getValue()) return true;
-        return false;
-    }
-
-    void apply(){
-        if(isSettingsChanged()){
-            Config.beatmapFolder = path.getValue().toString();
-            Config.flashTime = (int)flash.getValue();
-            Config.onBrightness = (int)onBrightness.getValue();
-            Config.fadeoutTime = (int)fadeout.getValue();
+    boolean verifySettings(){
+        if(!new File(beatmapFolderPathTextField.getText()).exists()){
+            JOptionPane.showMessageDialog(null, "Beatmap folder path is invalid");
+            return false;
         }
-        Utils.Config.save();
-        apply.setEnabled(false);
+        if((int)fadeoutTimeSpinner.getValue() <= 0){
+            JOptionPane.showMessageDialog(null, "Fadeout time must be over 0ms");
+            return false;
+        }
+        if((int)flashTimeSpinner.getValue() <= 0){
+            JOptionPane.showMessageDialog(null, "Flash time must be over 0ms");
+            return false;
+        }
+        if((int)onBrightnessSpinner.getValue() <= 0){
+            JOptionPane.showMessageDialog(null, "On brightness must be over 0%");
+            return false;
+        }
+        return true;
     }
 }

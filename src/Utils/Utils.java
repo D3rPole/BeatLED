@@ -3,7 +3,7 @@ package Utils;
 import BeatmapPlayer.BeatmapPlayer;
 import Lighting.Components.Color;
 import Lighting.LEDController;
-import UI.MainUI;
+import UI.Main;
 
 import java.awt.*;
 import java.io.File;
@@ -11,7 +11,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Utils {
-    public static UI.V2.Main ui;
+    public static Main ui;
     public static LEDController ledController;
     public static BeatmapPlayer beatmapPlayer;
     public static int leftLaserSpeed;

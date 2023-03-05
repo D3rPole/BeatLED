@@ -1,4 +1,4 @@
-package UI.V2.CustomComponents;
+package UI.CustomComponents;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
