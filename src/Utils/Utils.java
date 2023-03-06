@@ -5,9 +5,13 @@ import Lighting.Components.Color;
 import Lighting.LEDController;
 import UI.Main;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Utils {
@@ -43,5 +47,18 @@ public class Utils {
                 setEnabledRecursive(child, enabled);
             }
         }
+    }
+
+    public static BufferedImage loadImageFromResource(String fileName){
+
+        BufferedImage buff;
+        try {
+            buff = ImageIO.read(Objects.requireNonNull(Utils.class.getResourceAsStream(fileName)));
+        } catch (IOException e) {
+            Debug.log(e);
+            return null;
+        }
+        return buff;
+
     }
 }

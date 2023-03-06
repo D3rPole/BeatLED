@@ -12,11 +12,11 @@ import Utils.Utils;
 import networking.Device;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class LEDController {
     Fixture[] fixtures;
@@ -34,17 +34,20 @@ public class LEDController {
 
     public void setEnvironment(String environment){
         Debug.log("environment: " + environment);
-        URL resource = getClass().getResource("/LightIDTables/" + environment + ".json");
-        String path;
-        if(resource == null){
-            path = getClass().getResource("/LightIDTables/DefaultEnvironment.json").getFile();
-        }else{
-            path = resource.getFile();
+        JSONObject envJson = null;
+        try (InputStream in = getClass().getResourceAsStream("/LightIDTables/" + environment + ".json");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+            envJson = new JSONObject(reader.lines().collect(Collectors.joining()));
+        } catch (IOException e) {
+            try (InputStream in = getClass().getResourceAsStream("/LightIDTables/DefaultEnvironment.json");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+                envJson = new JSONObject(reader.lines().collect(Collectors.joining()));
+            } catch (IOException ex) {
+                Debug.log(ex);
+            }
         }
-        path = path.replace("%20"," ");
-        File envFile = new File(path);
-        Debug.log(path);
-        JSONObject envJson = new JSONObject(Utils.readFile(envFile));
+
+        if(envJson == null) return;
 
         int fixtureCount = envJson.length();
         fixtures = new Fixture[fixtureCount];

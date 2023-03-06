@@ -27,10 +27,10 @@ public class FolderCard {
             imagePanel.setLayout(layout);
             String imgPath;
             if(parent){
-                imgPath = getClass().getResource("/Assets/Back.png").getPath().replace("%20", " ");
+                imgPath = "/Assets/Back.png";
                 typeLabel.setText("Parent folder");
             }else {
-                imgPath = getClass().getResource("/Assets/Directory.png").getPath().replace("%20", " ");
+                imgPath = "/Assets/Directory.png";
             }
             imgPanel = new ImagePanel(imgPath);
             imagePanel.add(imgPanel);

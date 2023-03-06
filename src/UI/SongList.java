@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class SongList {
     JPanel panel;
@@ -43,16 +44,13 @@ public class SongList {
         scrollBar.setUnitIncrement(10);
         scrollBar.setBlockIncrement(50);
 
-        String imgPath = getClass().getResource("/Assets/Home.png").getPath().replace("%20", " ");
-        ImageIcon icon = new ImageIcon(imgPath);
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Home.png")));
         backToBeatmapFolderButton.setIcon(icon);
 
-        imgPath = getClass().getResource("/Assets/Refresh.png").getPath().replace("%20", " ");
-        icon = new ImageIcon(imgPath);
+        icon = new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Refresh.png")));
         refreshButton.setIcon(icon);
 
-        imgPath = getClass().getResource("/Assets/Search.png").getPath().replace("%20", " ");
-        icon = new ImageIcon(imgPath);
+        icon = new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Search.png")));
         searchButton.setIcon(icon);
 
         updateSongList(Config.beatmapFolder,"");

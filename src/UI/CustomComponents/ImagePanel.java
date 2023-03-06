@@ -1,31 +1,44 @@
 package UI.CustomComponents;
 
 import Utils.Debug;
+import Utils.Utils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.AWTEventListener;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 public class ImagePanel extends JPanel {
     Image image;
     boolean imageLoaded;
+
+    boolean resource;
     String imgPath;
     public ImagePanel(String path) throws IOException {
-        imgPath = path;
-        File imgFile = new File(imgPath);
-        if(!imgFile.exists()) {
-            imgPath = getClass().getResource("/Assets/Image.png").getPath().replace("%20", " ");
+        if(new File(path).exists()){
+            imgPath = path;
+        }else {
+            resource = true;
+            InputStream in = getClass().getResourceAsStream(path);
+            if(in == null){
+                imgPath = "/Assets/Image.png";
+            }else{
+                imgPath = path;
+            }
         }
     }
 
+
+
     public void loadImage(){
-        try {
-            image = ImageIO.read(new File(imgPath)).getScaledInstance(64,64, Image.SCALE_SMOOTH);
-        } catch (IOException ex) {
-            Debug.log(ex);
+        if(resource){
+            image = Utils.loadImageFromResource(imgPath);
+        }else {
+            try {
+                image = ImageIO.read(new File(imgPath)).getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+            } catch (IOException ex) {
+                Debug.log(ex);
+            }
         }
         imageLoaded = true;
     }
