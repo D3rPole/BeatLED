@@ -23,7 +23,9 @@ public class OggPlayer extends Thread {
     public void run() {
         play(path);
     }
-    public SourceDataLine line;
+    SourceDataLine line;
+
+    long duration;
     OggPlayer(String path){
         this.path = path;
     }
@@ -33,8 +35,8 @@ public class OggPlayer extends Thread {
         final File file = new File(filePath);
 
         try{
-            final AudioInputStream in = getAudioInputStream(file);
-            final AudioFormat outFormat = getOutFormat(in.getFormat());
+            AudioInputStream in = getAudioInputStream(file);
+            AudioFormat outFormat = getOutFormat(in.getFormat());
             final Info info = new Info(SourceDataLine.class, outFormat);
 
             line = (SourceDataLine) AudioSystem.getLine(info);
@@ -43,6 +45,7 @@ public class OggPlayer extends Thread {
                 line.open(outFormat);
                 line.start();
                 AudioInputStream inputMystream = AudioSystem.getAudioInputStream(outFormat, in);
+                //duration = (long)(1000 * inputMystream.getFrameLength() / inputMystream.getFormat().getFrameRate());
                 stream(inputMystream, line);
                 line.drain();
                 line.stop();
@@ -54,17 +57,25 @@ public class OggPlayer extends Thread {
         }
     }
 
-    private AudioFormat getOutFormat(AudioFormat inFormat) {
-        final int ch = inFormat.getChannels();
-        final float rate = inFormat.getSampleRate();
-        return new AudioFormat(PCM_SIGNED, rate, 16, ch, ch * 2, rate, false);
-    }
-
-    private void stream(AudioInputStream in, SourceDataLine line)
-            throws IOException {
+    private void stream(AudioInputStream in, SourceDataLine line) throws IOException {
         final byte[] buffer = new byte[4096];
         for (int n = 0; n != -1; n = in.read(buffer, 0, buffer.length)) {
             line.write(buffer, 0, n);
         }
+    }
+
+    public long getDuration(){
+        return duration;
+    }
+
+    public long getCurrentTime(){
+        if(line == null) return -1;
+        return line.getMicrosecondPosition() / 1000;
+    }
+
+    private AudioFormat getOutFormat(AudioFormat inFormat) {
+        final int ch = inFormat.getChannels();
+        final float rate = inFormat.getSampleRate();
+        return new AudioFormat(PCM_SIGNED, rate, 16, ch, ch * 2, rate, false);
     }
 }

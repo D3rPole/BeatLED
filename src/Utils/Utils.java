@@ -26,7 +26,7 @@ public class Utils {
     public static double BPM;
     public static int difficulty;
 
-    public static String readFile(File file) {
+    /*public static String readFile(File file) {
         try {
             Scanner scanner = new Scanner(file);
             String str = "";
@@ -35,6 +35,21 @@ public class Utils {
             }
             return str;
         }catch(FileNotFoundException e){
+            Debug.log(e);
+        }
+        return "";
+    }*/
+
+    public static String readFile(File file) {
+        try {
+            Scanner scanner = new Scanner(file);
+            StringBuilder sb = new StringBuilder();
+            while (scanner.hasNextLine()){
+                sb.append(scanner.nextLine());
+            }
+            scanner.close();
+            return sb.toString();
+        } catch (FileNotFoundException e) {
             Debug.log(e);
         }
         return "";

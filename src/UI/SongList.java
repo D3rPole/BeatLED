@@ -4,18 +4,20 @@ import BeatmapLoader.Beatmap.DiffInfo;
 import BeatmapLoader.Beatmap.Info;
 import BeatmapLoader.Beatmap.SimpleInfo;
 import BeatmapLoader.Parser;
+import BeatmapPlayer.OggPlayer;
 import Utils.*;
 
+import javax.sound.sampled.SourceDataLine;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class SongList {
     JPanel panel;
     private JButton playButton;
-    private JButton stopButton;
     private JList songList;
     private JList<DiffInfo> diffList;
     private JPanel songListPanel;
@@ -29,6 +31,9 @@ public class SongList {
     private JTextField searchTextField;
     private JButton searchButton;
     private JButton refreshButton;
+    private JButton stopButton;
+    private JProgressBar beatmapTimeProgressBar;
+    private JLabel beatmapTimeLabel;
 
     ArrayList<BeatmapCard> beatmapsCards;
     ArrayList<FolderCard> folderCards;
@@ -53,12 +58,22 @@ public class SongList {
         icon = new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Search.png")));
         searchButton.setIcon(icon);
 
+        icon = new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Play.png")));
+        playButton.setIcon(icon);
+
+        icon = new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Stop.png")));
+        stopButton.setIcon(icon);
+
         updateSongList(Config.beatmapFolder,"");
 
         playButton.addActionListener(e ->{
             if(diffList.getSelectedIndex() == -1) return;
+            if(Utils.beatmapPlayer.playing) Utils.beatmapPlayer.stop();
             Utils.beatmapPlayer.load(simpleInfo.path);
             Utils.beatmapPlayer.play(diffList.getSelectedIndex());
+            new Thread(() -> {
+                updateTimeLoop();
+            }).start();
         });
 
         stopButton.addActionListener(e -> Utils.beatmapPlayer.stop());
@@ -77,6 +92,24 @@ public class SongList {
         });
 
         backToBeatmapFolderButton.addActionListener(e -> updateSongList(Config.beatmapFolder,""));
+    }
+
+    public void updateTimeLoop(){
+        while(true){
+            try {
+                if(!Utils.beatmapPlayer.songPlayer.isAlive()) break;
+                OggPlayer player = Utils.beatmapPlayer.songPlayer;
+                long currentTime = player.getCurrentTime();
+
+                int seconds = (int) (currentTime / 1000); // convert milliseconds to seconds
+                int minutes = seconds / 60; // calculate the number of minutes
+                seconds %= 60; // calculate the remaining seconds
+
+                beatmapTimeLabel.setText(String.format("%02d:%02d", minutes, seconds));
+                beatmapTimeProgressBar.setValue((seconds % 20) * 5);
+                TimeUnit.SECONDS.sleep(1);
+            } catch (Exception e) {}
+        }
     }
 
     public void setInfo(SimpleInfo simpleInfo){

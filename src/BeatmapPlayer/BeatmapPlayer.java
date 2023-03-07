@@ -42,6 +42,7 @@ public class BeatmapPlayer {
 
     public void play(int difficulty){
         if(initiated){
+            Debug.log("playing...");
             stop();
             playing = true;
             songPlayer = new OggPlayer(songPath);
@@ -82,13 +83,7 @@ public class BeatmapPlayer {
             Event event = events.get(0);
             events.remove(0);
             Timer timer = new Timer();
-            long songTime;
-            if(songPlayer.line != null) {
-                songTime = songPlayer.line.getMicrosecondPosition() / 1000;
-            }else{
-                Date date = new Date();
-                songTime = (date.getTime() - timeA);
-            }
+            long songTime = songPlayer.getCurrentTime();
             long time = event.time - songTime;
 
             nextEventTask = new TimerTask() {
@@ -102,6 +97,7 @@ public class BeatmapPlayer {
             timer.schedule(nextEventTask,  Math.max(0, time));
         }else{
             Debug.log("no events");
+            Utils.ledController.setActive(false);
             playing = false;
         }
     }

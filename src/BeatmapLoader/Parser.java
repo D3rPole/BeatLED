@@ -111,25 +111,30 @@ public class Parser {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = null;
         try {
+            Debug.log("Opening diff file");
             rootNode = objectMapper.readTree(Utils.readFile(diffFile));
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            Debug.log(e);
+            return null;
         }
 
         if(rootNode.has("_version")){
+            diff.version = rootNode.get("_version").asText();
             parseV2(diff, rootNode);
         }else if(rootNode.has("version")){
+            diff.version = rootNode.get("version").asText();
             parseV3(diff, rootNode);
         }else{
-            Debug.log("Incompatible beatmap version");
-            return null;
+            Debug.log("Incompatible beatmap version, but trying v2 cuz some beatmaps are retarted and dont tell you version");
+            diff.version = "uknown";
+            parseV2(diff, rootNode);
         }
 
         return diff;
     }
 
     public static void parseV2(Diff diff, JsonNode rootNode){
-        diff.version = rootNode.get("_version").asText();
+        Debug.log("Parsing v2 diff");
         JsonNode eventsNode = rootNode.get("_events");
         diff.events = new Event[eventsNode.size()];
         for (int i = 0; i < eventsNode.size(); i++) {
@@ -140,7 +145,7 @@ public class Parser {
         }
     }
     public static void parseV3(Diff diff, JsonNode rootNode){
-        diff.version = rootNode.get("version").asText();
+        Debug.log("Parsing v3 diff");
         JsonNode eventsNode = rootNode.get("basicBeatmapEvents");
 
         diff.events = new Event[eventsNode.size()];

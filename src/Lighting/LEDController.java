@@ -14,8 +14,6 @@ import networking.Device;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.net.URL;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
