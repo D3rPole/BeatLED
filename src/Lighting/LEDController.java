@@ -1,6 +1,7 @@
 package Lighting;
 
 import BeatmapLoader.Beatmap.Event;
+import Lighting.Components.Color;
 import Lighting.Components.LEDstrip;
 import Lighting.Fixtures.Fixture;
 import Lighting.Fixtures.LaserRotating;
@@ -18,20 +19,26 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static java.lang.System.currentTimeMillis;
+
 public class LEDController {
     Fixture[] fixtures;
-
-    TimerTask timerTask;
-
     boolean active = false;
+    public long TPS;
+    public long tickTime;
+    final int TARGET_FPS = 48;
+    final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
+    long lastLoopTime = System.nanoTime();
+    public boolean strobing = false;
+
+    int strobeFreq;
+    int strobeDuty;
+    int strobeBrightness;
 
     public LEDController(){
         Debug.log("Creating LEDController");
-
         setEnvironment("DefaultEnvironment");
-
     }
-
     public void setEnvironment(String environment){
         Debug.log("environment: " + environment);
         JSONObject envJson = null;
@@ -64,26 +71,19 @@ public class LEDController {
             Debug.log(fixtures[i]);
         }
     }
-    public long TPS;
-    public long tickTime;
-    final int TARGET_FPS = 48;
-    final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
-    long lastLoopTime = System.nanoTime();
     public void update(){
+        Utils.ui.controller.updateStrobe();
         while(true) {
             long start = System.nanoTime();
             TPS = 1000000000 / (start - lastLoopTime);
             lastLoopTime = start;
 
             if (active) {
-                for (int i = 0; i < fixtures.length; i++) {
-                    fixtures[i].update();
+                if(strobing){
+                    applyStrobe();
+                }else{
+                    applyBeatmapEvents();
                 }
-
-                for (int i = 0; i < Config.devices.size(); i++) {
-                    Config.devices.get(i).applyEffects(fixtures);
-                }
-
                 send();
             }
             tickTime = System.nanoTime() - start;
@@ -93,7 +93,32 @@ public class LEDController {
             } catch (Exception e) {}
         }
     }
+    void applyStrobe(){
+        int millisPerFlash = 1000 / strobeFreq;
+        long time = currentTimeMillis();
+        int brightness = 0;
+        if(time%millisPerFlash > (long) millisPerFlash * (100 - strobeDuty) / 100){
+            brightness = strobeBrightness;
+        }
+        Color c = new Color(255,255,255).brightness(brightness);
+        for (int i = 0; i < Config.devices.size(); i++) {
+            Config.devices.get(i).ledStrip.setColorSolid(c);
+        }
+    }
+    void applyBeatmapEvents(){
+        for (int i = 0; i < fixtures.length; i++) {
+            fixtures[i].update();
+        }
 
+        for (int i = 0; i < Config.devices.size(); i++) {
+            Config.devices.get(i).applyEffects(fixtures);
+        }
+    }
+    public void setStrobeSettings(int freq, int duty, int brightness){
+        strobeFreq = freq;
+        strobeDuty = duty;
+        strobeBrightness = brightness;
+    }
     public void send(){
         try {
             Device[] devices = new Device[Config.devices.size()];
@@ -185,11 +210,9 @@ public class LEDController {
             fixture.setColor(lightIDs, Utils.white);
         }
     }
-
     public boolean isActive() {
         return active;
     }
-
     public void setActive(boolean active) {
         this.active = active;
         Utils.ui.controller.setActiveCheckBox(active);

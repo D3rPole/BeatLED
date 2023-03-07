@@ -1,6 +1,7 @@
 package UI.Preview;
 
 import Lighting.Components.LEDstrip;
+import Utils.Debug;
 
 import javax.swing.*;
 import java.awt.*;

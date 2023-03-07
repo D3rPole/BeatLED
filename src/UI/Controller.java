@@ -23,6 +23,13 @@ public class Controller {
     private JLabel fpsLabel;
     private JLabel frameTimeLabel;
     private JSpinner valueSpinner;
+    private JSlider strobeFreqSlider;
+    private JSpinner strobeFreqSpinner;
+    private JSlider strobeDutySlider;
+    private JSlider strobeBrightnessSlider;
+    private JSpinner strobeDutySpinner;
+    private JSpinner strobeBrightnessSpinner;
+    private JButton strobesToggleButton;
 
     private Preview preview;
 
@@ -66,7 +73,6 @@ public class Controller {
         preview = new Preview();
         previewPanel.add(preview.previewPanel);
     }
-
     void setupManualControl(){
         typeComboBox.addItem(new Item("Back lights",0));
         typeComboBox.addItem(new Item("Ring lights",1));
@@ -81,18 +87,63 @@ public class Controller {
         typeComboBox.addItem(new Item("Right laser speed",13));
 
         typeComboBox.addItem(new Item("Boost lights",5));
-    }
 
+
+        strobeBrightnessSlider.addChangeListener(e -> strobeBrightnessSpinner.setValue(strobeBrightnessSlider.getValue()));
+        strobeDutySlider.addChangeListener(e -> strobeDutySpinner.setValue(strobeDutySlider.getValue()));
+        strobeFreqSlider.addChangeListener(e -> strobeFreqSpinner.setValue(strobeFreqSlider.getValue() / 4));
+
+        strobeBrightnessSpinner.addChangeListener(e -> {
+            if((int)strobeBrightnessSpinner.getValue() > 100) strobeBrightnessSpinner.setValue(100);
+            if((int)strobeBrightnessSpinner.getValue() < 0) strobeBrightnessSpinner.setValue(0);
+
+            strobeBrightnessSlider.setValue((int)strobeBrightnessSpinner.getValue());
+            if(Utils.ledController == null) return;
+            Utils.ledController.setStrobeSettings((int)strobeFreqSpinner.getValue(),(int)strobeDutySpinner.getValue(),(int)strobeBrightnessSpinner.getValue());
+        });
+        strobeDutySpinner.addChangeListener(e -> {
+            if((int)strobeDutySpinner.getValue() > 100) strobeDutySpinner.setValue(100);
+            if((int)strobeDutySpinner.getValue() < 0) strobeDutySpinner.setValue(0);
+
+            strobeDutySlider.setValue((int)strobeDutySpinner.getValue());
+            if(Utils.ledController == null) return;
+            Utils.ledController.setStrobeSettings((int)strobeFreqSpinner.getValue(),(int)strobeDutySpinner.getValue(),(int)strobeBrightnessSpinner.getValue());
+        });
+        strobeFreqSpinner.addChangeListener(e -> {
+            if((int)strobeFreqSpinner.getValue() > 25) strobeFreqSpinner.setValue(25);
+            if((int)strobeFreqSpinner.getValue() < 1) strobeFreqSpinner.setValue(1);
+
+            strobeFreqSlider.setValue((int)strobeFreqSpinner.getValue() * 4);
+            if(Utils.ledController == null) return;
+            Utils.ledController.setStrobeSettings((int)strobeFreqSpinner.getValue(),(int)strobeDutySpinner.getValue(),(int)strobeBrightnessSpinner.getValue());
+        });
+
+        strobeBrightnessSpinner.setValue(Config.onBrightness);
+        strobeDutySpinner.setValue(50);
+        strobeFreqSpinner.setValue(10);
+
+        strobesToggleButton.addActionListener(e -> {
+            Utils.ledController.strobing = !Utils.ledController.strobing;
+            if(Utils.ledController.strobing){
+                strobesToggleButton.setText("Stop");
+            }else{
+                strobesToggleButton.setText("Start");
+            }
+        });
+    }
     public void updateFPS(long FPS, long frameTime, long target){
         if(!activeCheckBox.isSelected()) return;
         fpsTargetLabel.setText(target + " FPS");
         fpsLabel.setText(FPS + " FPS");
         frameTimeLabel.setText(frameTime / 1000 + " µs");
     }
-
     public void setActiveCheckBox(boolean active){
         if(activeCheckBox.isSelected() != active){
             activeCheckBox.doClick();
         }
+    }
+
+    public void updateStrobe(){
+        Utils.ledController.setStrobeSettings((int)strobeFreqSpinner.getValue(),(int)strobeDutySpinner.getValue(),(int)strobeBrightnessSpinner.getValue());
     }
 }

@@ -10,8 +10,8 @@ public class LED {
         this.color = this.color.add(color);
     }
     public void setColor(Color color){
-        this.color.r = (byte)color.r;
-        this.color.g = (byte)color.g;
-        this.color.b = (byte)color.b;
+        this.color.r = color.r;
+        this.color.g = color.g;
+        this.color.b = color.b;
     }
 }
