@@ -40,6 +40,10 @@ public class Light {
         gradiantHappening = true;
     }
 
+    public Config.value getCurrentValue(){
+        return currentValue;
+    }
+
     public void update(){
         int brightness;
         if(gradiantHappening){

@@ -4,6 +4,7 @@ import Lighting.Components.Color;
 import Lighting.Components.ColorGradient;
 import Lighting.Components.LEDstrip;
 import Lighting.Components.Light;
+import Utils.Config;
 
 public abstract class Fixture {
     public Light[] lights;
@@ -37,6 +38,13 @@ public abstract class Fixture {
     public void flash(){
         for (int i = 0; i < lights.length; i++) {
             lights[i].flash();
+        }
+    }
+    public void flashOnlyActive(){
+        for (int i = 0; i < lights.length; i++) {
+            if(lights[i].getCurrentValue() == Config.value.FLASH || lights[i].getCurrentValue() == Config.value.ON){
+                lights[i].flash();
+            }
         }
     }
     public void fadeout(){

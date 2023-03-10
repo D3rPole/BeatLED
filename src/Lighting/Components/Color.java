@@ -43,6 +43,10 @@ public class Color {
         return Math.max(min,Math.min(max,value));
     }
 
+    public boolean equals(Color c) {
+        return c.r == r && c.g == g && c.b == b;
+    }
+
     @Override
     public String toString() {
         return "(Color) r: " + r + ", g: " + g + ", b: " + b;

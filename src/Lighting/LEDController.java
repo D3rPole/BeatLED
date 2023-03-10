@@ -136,6 +136,11 @@ public class LEDController {
     public void lightEvent(Event event){
         if(event.type == 12) Utils.leftLaserSpeed = event.valueAlt;
         if(event.type == 13) Utils.rightLaserSpeed = event.valueAlt;
+        if(event.type == 8 || event.type == 9) { //Ring spin and zoom causes global flash, idk what else to do
+            for (int i = 0; i < fixtures.length; i++) {
+                fixtures[i].flashOnlyActive();
+            }
+        }
         if(event.type > 4) return;
         if(event.customData.lightIDs.length == 0){
             all(event);
