@@ -14,12 +14,14 @@ public class Settings {
     private JSpinner fadeoutTimeSpinner;
     private JSpinner flashTimeSpinner;
     private JSpinner onBrightnessSpinner;
+    private JSpinner flashBrightnessSpinner;
 
     Settings(){
         beatmapFolderPathTextField.setText(Config.beatmapFolder);
         fadeoutTimeSpinner.setValue(Config.fadeoutTime);
         flashTimeSpinner.setValue(Config.flashTime);
         onBrightnessSpinner.setValue(Config.onBrightness);
+        flashBrightnessSpinner.setValue(Config.flashBrightness);
 
         applySettingsButton.addActionListener(e -> {
             if(!verifySettings()) return;
@@ -27,6 +29,7 @@ public class Settings {
             Config.fadeoutTime = (int)fadeoutTimeSpinner.getValue();
             Config.flashTime = (int)flashTimeSpinner.getValue();
             Config.onBrightness = (int)onBrightnessSpinner.getValue();
+            Config.flashBrightness = (int)flashBrightnessSpinner.getValue();
             Config.save();
         });
 
@@ -56,6 +59,10 @@ public class Settings {
         }
         if((int)flashTimeSpinner.getValue() <= 0){
             JOptionPane.showMessageDialog(null, "Flash time must be over 0ms");
+            return false;
+        }
+        if((int)flashBrightnessSpinner.getValue() < (int)onBrightnessSpinner.getValue()){
+            JOptionPane.showMessageDialog(null, "Flash brightness can't be lower then on brightness");
             return false;
         }
         if((int)onBrightnessSpinner.getValue() <= 0){

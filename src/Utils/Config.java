@@ -12,6 +12,7 @@ public class Config {
     public enum value{ OFF, ON, FLASH, FADEOUT, TRANSITION, OTHER }
     public static int fadeoutTime = 500;
     public static int flashTime = 250;
+    public static int flashBrightness = 120;
     public static int onBrightness = 70;
     public static String beatmapFolder = "C:\\Users\\ikawe\\Desktop\\LED controller\\bs maps\\";
     public static int defaultPort = 65506;
@@ -34,6 +35,7 @@ public class Config {
         prefs.put("fadeoutTime", String.valueOf(fadeoutTime));
         prefs.put("flashTime", String.valueOf(flashTime));
         prefs.put("onBrightness", String.valueOf(onBrightness));
+        prefs.put("flashBrightness", String.valueOf(flashBrightness));
 
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -53,6 +55,7 @@ public class Config {
         fadeoutTime = Integer.parseInt(prefs.get("fadeoutTime", "500"));
         flashTime = Integer.parseInt(prefs.get("flashTime", "250"));
         onBrightness = Integer.parseInt(prefs.get("onBrightness", "70"));
+        flashBrightness = Integer.parseInt(prefs.get("flashBrightness", "120"));
         String json = prefs.get("devices", "");
         try {
             ObjectMapper mapper = new ObjectMapper();

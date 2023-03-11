@@ -54,7 +54,7 @@ public class Light {
                 currentColor = color.brightness(Config.onBrightness);
                 break;
             case FLASH:
-                brightness = (int) ((timeSinceChange + Config.flashTime - millis()) * 100 / Config.flashTime) * (100 - Config.onBrightness) / 100;
+                brightness = (int) ((timeSinceChange + Config.flashTime - millis()) * 100 / Config.flashTime) * (Config.flashBrightness - Config.onBrightness) / 100;
                 currentColor = color.brightness(Config.onBrightness + Math.max(0, brightness));
                 break;
             case FADEOUT:
