@@ -32,12 +32,12 @@ public class LaserRotating extends Fixture{
         if(renderBackwards) mul = -1;
         for (int i = 0; i < lasers; i++) {
             double sin = (Math.sin(radian + (double)i / lasers * Math.PI)* mul + 1) / 2 * size;
-            //ledStrip.placePoint(from + sin,5,lights[i% lights.length].getCurrentColor(),from,to);
-            ledStrip.setColorSingle((int) (from + sin)-2,lights[i% lights.length].getCurrentColor());
+            ledStrip.placePoint(from + sin,5,lights[i% lights.length].getCurrentColor(),from,to);
+            /*ledStrip.setColorSingle((int) (from + sin)-2,lights[i% lights.length].getCurrentColor());
             ledStrip.setColorSingle((int) (from + sin)-1,lights[i% lights.length].getCurrentColor());
             ledStrip.setColorSingle((int) (from + sin),lights[i% lights.length].getCurrentColor());
             ledStrip.setColorSingle((int) (from + sin)+1,lights[i% lights.length].getCurrentColor());
-            ledStrip.setColorSingle((int) (from + sin)+2,lights[i% lights.length].getCurrentColor());
+            ledStrip.setColorSingle((int) (from + sin)+2,lights[i% lights.length].getCurrentColor());*/
         }
     }
 }
