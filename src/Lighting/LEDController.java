@@ -14,6 +14,9 @@ import networking.Device;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -24,7 +27,7 @@ public class LEDController {
     boolean active = false;
     public long TPS;
     public long tickTime;
-    final int TARGET_FPS = 48;
+    final int TARGET_FPS = 120;
     final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
     long lastLoopTime = System.nanoTime();
     public boolean strobing = false;
@@ -32,6 +35,9 @@ public class LEDController {
     int strobeFreq;
     int strobeDuty;
     int strobeBrightness;
+
+    int tempTPS = 0;
+    long time;
 
     public LEDController(){
         Debug.log("Creating LEDController");
@@ -70,10 +76,19 @@ public class LEDController {
         }
     }
     public void update(){
+        Debug.log("update called");
         Utils.ui.controller.updateStrobe();
-        while(true) {
+        time = System.nanoTime();
+        ScheduledFuture s = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::loop, 0, OPTIMAL_TIME, TimeUnit.NANOSECONDS);
+        /*while(true) {
             long start = System.nanoTime();
-            TPS = 1000000000 / (start - lastLoopTime);
+            if(time + 1000000000 < System.nanoTime()){
+                TPS = tempTPS;
+                tempTPS = 0;
+                time = System.nanoTime();
+            }
+            tempTPS++;
+           // TPS = 1000000000 / (start - lastLoopTime);
             lastLoopTime = start;
 
             if (active) {
@@ -89,13 +104,35 @@ public class LEDController {
             try {
                 TimeUnit.NANOSECONDS.sleep(OPTIMAL_TIME - tickTime);
             } catch (Exception e) {}
+        }*/
+    }
+    public void loop(){
+        long start = System.nanoTime();
+        if(time + 1000000000 < System.nanoTime()){
+            TPS = tempTPS;
+            tempTPS = 0;
+            time = System.nanoTime();
         }
+        tempTPS++;
+        // TPS = 1000000000 / (start - lastLoopTime);
+        lastLoopTime = start;
+
+        if (active) {
+            if(strobing){
+                applyStrobe();
+            }else{
+                applyBeatmapEvents();
+            }
+            send();
+        }
+        tickTime = System.nanoTime() - start;
+        Utils.ui.controller.updateFPS(TPS,tickTime,TARGET_FPS);
     }
     void applyStrobe(){
-        int millisPerFlash = 1000 / strobeFreq;
-        long time = currentTimeMillis();
+        int nanoPerFlash = 1000000000 / strobeFreq;
+        long time = System.nanoTime();
         int brightness = 0;
-        if(time%millisPerFlash > (long) millisPerFlash * (100 - strobeDuty) / 100){
+        if(time%nanoPerFlash > (long) nanoPerFlash * (100 - strobeDuty) / 100){
             brightness = strobeBrightness;
         }
         Color c = new Color(255,255,255).brightness(brightness);
