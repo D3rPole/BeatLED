@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 public class SongList {
     JPanel panel;
     private JButton playButton;
-    private JList songList;
     private JList<DiffInfo> diffList;
     private JPanel songListPanel;
     private JScrollPane songListScrollPane;
@@ -140,6 +139,7 @@ public class SongList {
     }
 
     public void updateSongList(String path, String filter){
+        songListScrollPane.getVerticalScrollBar().setValue(0);
         currentFolder = path;
         Debug.log("updating songlist at: " + path);
         songListPanel.removeAll();
@@ -183,6 +183,20 @@ public class SongList {
             }
         }
 
+        new Thread(() -> {
+            for (FolderCard folderCard : folderCards) {
+                folderCard.imgPanel.loadImage();
+                folderCard.imgPanel.repaint();
+            }
+        }).start();
+
+        new Thread(() -> {
+            for (BeatmapCard beatmapsCard : beatmapsCards) {
+                beatmapsCard.imgPanel.loadImage();
+                beatmapsCard.imgPanel.repaint();
+            }
+        }).start();
+
         GridBagLayout layout = new GridBagLayout();
         songListPanel.setLayout(layout);
         GridBagConstraints c = new GridBagConstraints();
@@ -205,16 +219,5 @@ public class SongList {
         c.weighty = 1;
         songListPanel.add(new JPanel(),c);
         Debug.log("list reloaded");
-
-        new Thread(() -> {
-            for (BeatmapCard beatmapsCard : beatmapsCards) {
-                beatmapsCard.imgPanel.loadImage();
-            }
-        }).start();
-        new Thread(() -> {
-            for (FolderCard folderCard : folderCards) {
-                folderCard.imgPanel.loadImage();
-            }
-        }).start();
     }
 }

@@ -65,7 +65,6 @@ public class Utils {
     }
 
     public static BufferedImage loadImageFromResource(String fileName){
-
         BufferedImage buff;
         try {
             buff = ImageIO.read(Objects.requireNonNull(Utils.class.getResourceAsStream(fileName)));
@@ -73,6 +72,7 @@ public class Utils {
             Debug.log(e);
             return null;
         }
+        Debug.log(buff);
         return buff;
 
     }
