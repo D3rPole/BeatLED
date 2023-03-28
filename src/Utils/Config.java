@@ -44,7 +44,6 @@ public class Config {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public static void load(){

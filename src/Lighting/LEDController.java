@@ -123,7 +123,7 @@ public class LEDController {
             }else{
                 applyBeatmapEvents();
             }
-            send();
+            //send();
         }
         tickTime = System.nanoTime() - start;
         Utils.ui.controller.updateFPS(TPS,tickTime,TARGET_FPS);

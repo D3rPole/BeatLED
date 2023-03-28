@@ -7,7 +7,6 @@ import BeatmapLoader.Parser;
 import BeatmapPlayer.OggPlayer;
 import Utils.*;
 
-import javax.sound.sampled.SourceDataLine;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -70,9 +69,7 @@ public class SongList {
             if(Utils.beatmapPlayer.playing) Utils.beatmapPlayer.stop();
             Utils.beatmapPlayer.load(simpleInfo.path);
             Utils.beatmapPlayer.play(diffList.getSelectedIndex());
-            new Thread(() -> {
-                updateTimeLoop();
-            }).start();
+            new Thread(this::updateTimeLoop).start();
         });
 
         stopButton.addActionListener(e -> Utils.beatmapPlayer.stop());
@@ -96,18 +93,27 @@ public class SongList {
     public void updateTimeLoop(){
         while(true){
             try {
-                if(!Utils.beatmapPlayer.songPlayer.isAlive()) break;
-                OggPlayer player = Utils.beatmapPlayer.songPlayer;
-                long currentTime = player.getCurrentTime();
+                if(Utils.beatmapPlayer.songPlayer.isPlaying()) {
+                    OggPlayer player = Utils.beatmapPlayer.songPlayer;
+                    long currentTime = player.getTime();
 
-                int seconds = (int) (currentTime / 1000); // convert milliseconds to seconds
-                int minutes = seconds / 60; // calculate the number of minutes
-                seconds %= 60; // calculate the remaining seconds
+                    int seconds = (int) (currentTime / 1000); // convert milliseconds to seconds
+                    int minutes = seconds / 60; // calculate the number of minutes
+                    seconds %= 60; // calculate the remaining seconds
 
-                beatmapTimeLabel.setText(String.format("%02d:%02d", minutes, seconds));
-                beatmapTimeProgressBar.setValue((seconds % 20) * 5);
+                    long duration = player.getDuration();
+                    int secondsDuration = (int) (duration / 1000); // convert milliseconds to seconds
+                    int minutesDuration = secondsDuration / 60; // calculate the number of minutes
+                    secondsDuration %= 60; // calculate the remaining seconds
+
+                    beatmapTimeLabel.setText(String.format("%02d:%02d", minutes, seconds) + " / " + String.format("%02d:%02d", minutesDuration, secondsDuration));
+                    beatmapTimeProgressBar.setValue((seconds % 20) * 5);
+                }
                 TimeUnit.SECONDS.sleep(1);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                Debug.log(e);
+            }
+
         }
     }
 

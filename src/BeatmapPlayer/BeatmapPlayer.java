@@ -36,7 +36,7 @@ public class BeatmapPlayer {
     public void stop(){
         if(songPlayer == null) return;
         playing = false;
-        songPlayer.stop();
+        songPlayer.stopAudio();
         Utils.ledController.setActive(false);
     }
 
@@ -49,7 +49,7 @@ public class BeatmapPlayer {
             Utils.difficulty = difficulty;
             DiffInfo diffInfo = info.diffs.get(difficulty);
             Diff diff = Parser.parseDiff(diffInfo.diffFileName,info.bpm);
-            songPlayer.start();
+            songPlayer.play();
             Utils.ledController.setEnvironment(info.environmentName);
             Utils.ledController.setActive(true);
             playEvents(diff,0.0);
@@ -76,14 +76,14 @@ public class BeatmapPlayer {
     public TimerTask nextEventTask;
 
     public void nextEvent(ArrayList<Event> events){
-        if(!this.songPlayer.isAlive()){
+        if(!this.songPlayer.isPlaying()){
             return;
         }
         if(events.size() > 0){
             Event event = events.get(0);
             events.remove(0);
             Timer timer = new Timer();
-            long songTime = songPlayer.getCurrentTime();
+            long songTime = songPlayer.getTime();
             long time = event.time - songTime;
 
             nextEventTask = new TimerTask() {

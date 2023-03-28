@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="googlecode.soundlibs.jorbis" type="repository">
+    <properties maven-id="com.googlecode.soundlibs:jorbis:0.0.17.4" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/googlecode/soundlibs/jorbis/0.0.17.4/jorbis-0.0.17.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

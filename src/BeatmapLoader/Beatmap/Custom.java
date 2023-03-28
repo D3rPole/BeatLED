@@ -4,8 +4,6 @@ import Lighting.Components.Color;
 import Lighting.Components.ColorGradient;
 import Utils.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class Custom {
     public boolean lockPosition;
