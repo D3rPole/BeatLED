@@ -13,7 +13,7 @@ public class BeatmapPlayer {
     Info info;
     boolean initiated;
     String songPath;
-    public OggPlayer songPlayer;
+    public OggPlayerDeprecated songPlayer;
 
     long timeA;
 
@@ -33,19 +33,12 @@ public class BeatmapPlayer {
         }
     }
 
-    public void stop(){
-        if(songPlayer == null) return;
-        playing = false;
-        songPlayer.stopAudio();
-        Utils.ledController.setActive(false);
-    }
-
     public void play(int difficulty){
         if(initiated){
             Debug.log("playing...");
             stop();
             playing = true;
-            songPlayer = new OggPlayer(songPath);
+            songPlayer = new OggPlayerDeprecated(songPath);
             Utils.difficulty = difficulty;
             DiffInfo diffInfo = info.diffs.get(difficulty);
             Diff diff = Parser.parseDiff(diffInfo.diffFileName,info.bpm);
@@ -53,10 +46,40 @@ public class BeatmapPlayer {
             Utils.ledController.setEnvironment(info.environmentName);
             Utils.ledController.setActive(true);
             playEvents(diff,0.0);
+            Utils.ui.songList.startPlaying();
             Debug.log("Playing Audioclip");
         }else{
             Debug.log("Beatmap Player is not ready");
         }
+    }
+    public boolean paused;
+    long timePaused;
+    public void pause(){
+        if(paused){
+            setTime(timePaused);
+            paused = false;
+        }else{
+            timePaused = songPlayer.getTime();
+            stop();
+            paused = true;
+        }
+    }
+    public void setTime(long time){
+        stop();
+        play(Utils.difficulty);
+        songPlayer.setTime(time);
+    }
+
+    public void stop(){
+        if(songPlayer == null) return;
+        playing = false;
+        songPlayer.stopAudio();
+        Utils.ledController.setActive(false);
+    }
+
+    public void stopBeatmap(){
+        stop();
+        Utils.ui.songList.stopPlaying();
     }
 
     public void playEvents(Diff diff,double startTime){

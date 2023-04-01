@@ -29,7 +29,7 @@ public class Main {
         hardwareManager = new HardwareManager();
         settings = new Settings();
 
-        tabbedPane.addTab("Song list", songList.panel);
+        tabbedPane.addTab("Beatmap list", songList.panel);
         tabbedPane.addTab("LED controller", controller.panel);
         tabbedPane.addTab("Hardware manager", hardwareManager.panel);
         tabbedPane.addTab("Settings", settings.panel);

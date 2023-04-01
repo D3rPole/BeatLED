@@ -4,7 +4,7 @@ import BeatmapLoader.Beatmap.DiffInfo;
 import BeatmapLoader.Beatmap.Info;
 import BeatmapLoader.Beatmap.SimpleInfo;
 import BeatmapLoader.Parser;
-import BeatmapPlayer.OggPlayer;
+import BeatmapPlayer.OggPlayerDeprecated;
 import Utils.*;
 
 import javax.swing.*;
@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SongList {
     JPanel panel;
@@ -32,6 +33,8 @@ public class SongList {
     private JButton stopButton;
     private JProgressBar beatmapTimeProgressBar;
     private JLabel beatmapTimeLabel;
+    private JButton pauseButton;
+    private JPanel playerPanel;
 
     ArrayList<BeatmapCard> beatmapsCards;
     ArrayList<FolderCard> folderCards;
@@ -47,32 +50,46 @@ public class SongList {
         scrollBar.setUnitIncrement(10);
         scrollBar.setBlockIncrement(50);
 
-        ImageIcon icon = new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Home.png")));
-        backToBeatmapFolderButton.setIcon(icon);
+        AtomicReference<ImageIcon> icon = new AtomicReference<>(new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Home.png"))));
+        backToBeatmapFolderButton.setIcon(icon.get());
 
-        icon = new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Refresh.png")));
-        refreshButton.setIcon(icon);
+        icon.set(new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Refresh.png"))));
+        refreshButton.setIcon(icon.get());
 
-        icon = new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Search.png")));
-        searchButton.setIcon(icon);
+        icon.set(new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Search.png"))));
+        searchButton.setIcon(icon.get());
 
-        icon = new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Play.png")));
-        playButton.setIcon(icon);
+        icon.set(new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Play.png"))));
+        playButton.setIcon(icon.get());
 
-        icon = new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Stop.png")));
-        stopButton.setIcon(icon);
+        icon.set(new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Stop.png"))));
+        stopButton.setIcon(icon.get());
+
+        icon.set(new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/pause.png"))));
+        pauseButton.setIcon(icon.get());
 
         updateSongList(Config.beatmapFolder,"");
 
+        pauseButton.addActionListener(e -> {
+            Utils.beatmapPlayer.pause();
+            if(Utils.beatmapPlayer.paused){
+                icon.set(new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/Play.png"))));
+                pauseButton.setIcon(icon.get());
+            }else{
+                icon.set(new ImageIcon(Objects.requireNonNull(Utils.loadImageFromResource("/Assets/pause.png"))));
+                pauseButton.setIcon(icon.get());
+            }
+        });
+
         playButton.addActionListener(e ->{
             if(diffList.getSelectedIndex() == -1) return;
-            if(Utils.beatmapPlayer.playing) Utils.beatmapPlayer.stop();
+            if(Utils.beatmapPlayer.playing) Utils.beatmapPlayer.stopBeatmap();
             Utils.beatmapPlayer.load(simpleInfo.path);
             Utils.beatmapPlayer.play(diffList.getSelectedIndex());
             new Thread(this::updateTimeLoop).start();
         });
 
-        stopButton.addActionListener(e -> Utils.beatmapPlayer.stop());
+        stopButton.addActionListener(e -> Utils.beatmapPlayer.stopBeatmap());
 
         searchButton.addActionListener(e -> {
             updateSongList(currentFolder,searchTextField.getText().toLowerCase());
@@ -88,13 +105,23 @@ public class SongList {
         });
 
         backToBeatmapFolderButton.addActionListener(e -> updateSongList(Config.beatmapFolder,""));
+
+        stopPlaying();
+    }
+
+    public void startPlaying(){
+        Utils.setEnabledRecursive(playerPanel,true);
+    }
+
+    public void stopPlaying(){
+        Utils.setEnabledRecursive(playerPanel,false);
     }
 
     public void updateTimeLoop(){
         while(true){
             try {
                 if(Utils.beatmapPlayer.songPlayer.isPlaying()) {
-                    OggPlayer player = Utils.beatmapPlayer.songPlayer;
+                    OggPlayerDeprecated player = Utils.beatmapPlayer.songPlayer;
                     long currentTime = player.getTime();
 
                     int seconds = (int) (currentTime / 1000); // convert milliseconds to seconds
@@ -105,13 +132,14 @@ public class SongList {
                     int secondsDuration = (int) (duration / 1000); // convert milliseconds to seconds
                     int minutesDuration = secondsDuration / 60; // calculate the number of minutes
                     secondsDuration %= 60; // calculate the remaining seconds
-
                     beatmapTimeLabel.setText(String.format("%02d:%02d", minutes, seconds) + " / " + String.format("%02d:%02d", minutesDuration, secondsDuration));
-                    beatmapTimeProgressBar.setValue((seconds % 20) * 5);
+                    if(duration != 0) {
+                        beatmapTimeProgressBar.setValue((int) (100 * currentTime / duration));
+                    }
                 }
                 TimeUnit.SECONDS.sleep(1);
             } catch (Exception e) {
-                Debug.log(e);
+                Debug.log(e.getMessage());
             }
 
         }
