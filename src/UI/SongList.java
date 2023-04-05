@@ -4,11 +4,13 @@ import BeatmapLoader.Beatmap.DiffInfo;
 import BeatmapLoader.Beatmap.Info;
 import BeatmapLoader.Beatmap.SimpleInfo;
 import BeatmapLoader.Parser;
-import BeatmapPlayer.OggPlayerDeprecated;
+import BeatmapPlayer.OggPlayer;
 import Utils.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -31,10 +33,10 @@ public class SongList {
     private JButton searchButton;
     private JButton refreshButton;
     private JButton stopButton;
-    private JProgressBar beatmapTimeProgressBar;
     private JLabel beatmapTimeLabel;
     private JButton pauseButton;
     private JPanel playerPanel;
+    private JSlider beatmapProgressSlider;
 
     ArrayList<BeatmapCard> beatmapsCards;
     ArrayList<FolderCard> folderCards;
@@ -44,6 +46,8 @@ public class SongList {
     Info info;
 
     String currentFolder;
+
+    boolean holdingSlider = false;
 
     SongList(){
         JScrollBar scrollBar = songListScrollPane.getVerticalScrollBar();
@@ -85,7 +89,7 @@ public class SongList {
             if(diffList.getSelectedIndex() == -1) return;
             if(Utils.beatmapPlayer.playing) Utils.beatmapPlayer.stopBeatmap();
             Utils.beatmapPlayer.load(simpleInfo.path);
-            Utils.beatmapPlayer.play(diffList.getSelectedIndex());
+            Utils.beatmapPlayer.play(diffList.getSelectedIndex(),0);
             new Thread(this::updateTimeLoop).start();
         });
 
@@ -104,6 +108,20 @@ public class SongList {
             searchTextField.setText("");
         });
 
+        beatmapProgressSlider.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                holdingSlider = true;
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                Utils.beatmapPlayer.setTime(beatmapProgressSlider.getValue() * Utils.beatmapPlayer.songPlayer.getDuration() / 100);
+                holdingSlider = false;
+            }
+        });
+
         backToBeatmapFolderButton.addActionListener(e -> updateSongList(Config.beatmapFolder,""));
 
         stopPlaying();
@@ -115,13 +133,17 @@ public class SongList {
 
     public void stopPlaying(){
         Utils.setEnabledRecursive(playerPanel,false);
+        beatmapProgressSlider.setValue(0);
+
+        beatmapTimeLabel.setText("00:00 / 00:00");
     }
 
     public void updateTimeLoop(){
         while(true){
             try {
+                if(!playerPanel.isEnabled()) break;
                 if(Utils.beatmapPlayer.songPlayer.isPlaying()) {
-                    OggPlayerDeprecated player = Utils.beatmapPlayer.songPlayer;
+                    OggPlayer player = Utils.beatmapPlayer.songPlayer;
                     long currentTime = player.getTime();
 
                     int seconds = (int) (currentTime / 1000); // convert milliseconds to seconds
@@ -133,15 +155,14 @@ public class SongList {
                     int minutesDuration = secondsDuration / 60; // calculate the number of minutes
                     secondsDuration %= 60; // calculate the remaining seconds
                     beatmapTimeLabel.setText(String.format("%02d:%02d", minutes, seconds) + " / " + String.format("%02d:%02d", minutesDuration, secondsDuration));
-                    if(duration != 0) {
-                        beatmapTimeProgressBar.setValue((int) (100 * currentTime / duration));
+                    if (duration != 0 && !holdingSlider) {
+                        beatmapProgressSlider.setValue((int) (100 * currentTime / duration));
                     }
                 }
                 TimeUnit.SECONDS.sleep(1);
             } catch (Exception e) {
-                Debug.log(e.getMessage());
+                throw new RuntimeException(e);
             }
-
         }
     }
 

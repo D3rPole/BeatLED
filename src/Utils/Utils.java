@@ -69,11 +69,8 @@ public class Utils {
         try {
             buff = ImageIO.read(Objects.requireNonNull(Utils.class.getResourceAsStream(fileName)));
         } catch (IOException e) {
-            Debug.log(e);
-            return null;
+            throw new RuntimeException(e);
         }
-        Debug.log(buff);
         return buff;
-
     }
 }

@@ -142,12 +142,6 @@
             <properties/>
             <border type="etched"/>
             <children>
-              <component id="19f64" class="javax.swing.JProgressBar" binding="beatmapTimeProgressBar">
-                <constraints>
-                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
-              </component>
               <component id="b0c7f" class="javax.swing.JLabel" binding="beatmapTimeLabel">
                 <constraints>
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -171,6 +165,12 @@
                 <properties>
                   <text value=""/>
                 </properties>
+              </component>
+              <component id="1128e" class="javax.swing.JSlider" binding="beatmapProgressSlider">
+                <constraints>
+                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
               </component>
             </children>
           </grid>
