@@ -58,8 +58,6 @@ public class LEDController {
             }
         }
 
-        if(envJson == null) return;
-
         int fixtureCount = envJson.length();
         fixtures = new Fixture[fixtureCount];
         for (int i = 0; i < fixtures.length; i++) {
@@ -76,7 +74,7 @@ public class LEDController {
         }
     }
     public void update(){
-        Debug.log("update called");
+        Debug.log("starting update loop");
         Utils.ui.controller.updateStrobe();
         time = System.nanoTime();
         ScheduledFuture s = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::loop, 0, OPTIMAL_TIME, TimeUnit.NANOSECONDS);
@@ -116,11 +114,11 @@ public class LEDController {
         tempTPS++;
         // TPS = 1000000000 / (start - lastLoopTime);
         lastLoopTime = start;
-
         if (active) {
             if(strobing){
                 applyStrobe();
             }else{
+                Utils.beatmapPlayer.update();
                 applyBeatmapEvents();
             }
             //send();
@@ -250,11 +248,12 @@ public class LEDController {
             fixture.setColor(lightIDs, Utils.white);
         }
     }
-    public boolean isActive() {
-        return active;
-    }
     public void setActive(boolean active) {
         this.active = active;
         Utils.ui.controller.setActiveCheckBox(active);
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }

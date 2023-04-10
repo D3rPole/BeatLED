@@ -87,13 +87,13 @@ public class SongList {
 
         playButton.addActionListener(e ->{
             if(diffList.getSelectedIndex() == -1) return;
-            if(Utils.beatmapPlayer.playing) Utils.beatmapPlayer.stopBeatmap();
+            if(Utils.beatmapPlayer.playing) Utils.beatmapPlayer.stop();
             Utils.beatmapPlayer.load(simpleInfo.path);
-            Utils.beatmapPlayer.play(diffList.getSelectedIndex(),0);
+            Utils.beatmapPlayer.play(diffList.getSelectedIndex());
             new Thread(this::updateTimeLoop).start();
         });
 
-        stopButton.addActionListener(e -> Utils.beatmapPlayer.stopBeatmap());
+        stopButton.addActionListener(e -> Utils.beatmapPlayer.stop());
 
         searchButton.addActionListener(e -> {
             updateSongList(currentFolder,searchTextField.getText().toLowerCase());
@@ -211,7 +211,7 @@ public class SongList {
 
         folderCards.add(new FolderCard(directoryFile.getParent(), directoryFile.getParent(),true));
         Thread[] threads = new Thread[directoryList.length];
-        Debug.log("Checking " + directoryList.length + " directory");
+        Debug.log("Checking " + directoryList.length + " directorys");
         for (int i = 0; i < directoryList.length; i++) {
             int finalI = i;
             threads[i] = new Thread(() -> {
