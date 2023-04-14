@@ -55,11 +55,32 @@ public class BeatmapPlayerV2 {
         songPlayer.stopAudio();
         playing = false;
     }
+
+    long pauseTime;
     public void pause(){
         paused = !paused;
+        if(paused){
+            pauseTime = songPlayer.getTime();
+            songPlayer.pause();
+        }else{
+            songPlayer.setTime(pauseTime);
+        }
     }
     public void setTime(long time){
-
+        if(!playing) return;
+        if(paused){
+            pauseTime = time;
+            return;
+        }
+        songPlayer.setTime(time);
+        while(time > diff.events[eventMarker].time){
+            eventMarker++;
+        }
+        if(eventMarker == 0) return;
+        while(time < diff.events[eventMarker - 1].time){
+            eventMarker--;
+            if(eventMarker == 0) return;
+        }
     }
 
     public void update(){

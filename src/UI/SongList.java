@@ -111,7 +111,7 @@ public class SongList {
         beatmapProgressSlider.addMouseListener(new MouseAdapter() {
 
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 holdingSlider = true;
             }
 
@@ -155,7 +155,7 @@ public class SongList {
                     int minutesDuration = secondsDuration / 60; // calculate the number of minutes
                     secondsDuration %= 60; // calculate the remaining seconds
                     beatmapTimeLabel.setText(String.format("%02d:%02d", minutes, seconds) + " / " + String.format("%02d:%02d", minutesDuration, secondsDuration));
-                    if (duration != 0 && !holdingSlider) {
+                    if (duration != 0 && !holdingSlider && Utils.beatmapPlayer.songPlayer.isPlaying()) {
                         beatmapProgressSlider.setValue((int) (100 * currentTime / duration));
                     }
                 }

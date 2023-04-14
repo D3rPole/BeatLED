@@ -32,9 +32,7 @@ public class OggPlayer {
     int skippedBytesTotal = 0;
     OggPlayer(String path){
         this.path = path;
-        thread = new Thread(() -> {
-            run();
-        });
+        thread = new Thread(this::run);
     }
 
     Thread thread;
@@ -49,6 +47,8 @@ public class OggPlayer {
             in = getAudioInputStream(file);
             outFormat = getOutFormat(in.getFormat());
             info = new Info(SourceDataLine.class, outFormat);
+
+            Debug.log(outFormat.properties());
 
             if(timeSet != 0){
                 bytesToSkip = (long)((timeSet / 1000.0) * outFormat.getFrameRate()) * outFormat.getFrameSize() + skippedBytesTotal;
@@ -85,6 +85,7 @@ public class OggPlayer {
     long bytesToSkip;
     public void setTime(long time){
         stopAudio();
+        skippedBytesTotal = 0;
         timeSet = time;
         thread = new Thread(this::run);
         thread.start();
@@ -93,9 +94,6 @@ public class OggPlayer {
     public void pause(){
         timePaused = getTime();
         stopAudio();
-    }
-    public void unpause(){
-        setTime(timePaused);
     }
 
     public void play() {
@@ -147,6 +145,4 @@ public class OggPlayer {
     public boolean isPlaying(){
         return playing;
     }
-
-
 }
