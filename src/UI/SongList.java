@@ -27,7 +27,6 @@ public class SongList {
     private JLabel artistLabel;
     private JLabel mapperLabel;
     private JLabel bpmLabel;
-    private JLabel chromaLabel;
     private JButton backToBeatmapFolderButton;
     private JTextField searchTextField;
     private JButton searchButton;
@@ -37,6 +36,7 @@ public class SongList {
     private JButton pauseButton;
     private JPanel playerPanel;
     private JSlider beatmapProgressSlider;
+    public JLabel warningsLabel;
 
     ArrayList<BeatmapCard> beatmapsCards;
     ArrayList<FolderCard> folderCards;
@@ -91,6 +91,21 @@ public class SongList {
             Utils.beatmapPlayer.load(simpleInfo.path);
             Utils.beatmapPlayer.play(diffList.getSelectedIndex());
             new Thread(this::updateTimeLoop).start();
+        });
+
+        diffList.addListSelectionListener(e -> {
+            if(diffList.getSelectedIndex() == -1) return;
+            ArrayList<String> warnings = info.diffs.get(diffList.getSelectedIndex()).warnings;
+            warningsLabel.setText("Additional info: ");
+            if(warnings.size() == 0){
+                warningsLabel.setText(warningsLabel.getText() + "none");
+            }
+            for (int i = 0; i < warnings.size() ; i++) {
+                warningsLabel.setText(warningsLabel.getText() + warnings.get(i));
+                if(i < warnings.size() - 1){
+                    warningsLabel.setText(warningsLabel.getText() + ", ");
+                }
+            }
         });
 
         stopButton.addActionListener(e -> Utils.beatmapPlayer.stop());

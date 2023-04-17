@@ -1,4 +1,5 @@
 package BeatmapPlayer;
+
 import BeatmapLoader.Beatmap.Diff;
 import BeatmapLoader.Beatmap.DiffInfo;
 import BeatmapLoader.Beatmap.Event;
@@ -7,17 +8,16 @@ import BeatmapLoader.Parser;
 import Utils.Debug;
 import Utils.Utils;
 
-import java.util.*;
-
 public class BeatmapPlayer {
     Info info;
     boolean initiated;
     String songPath;
     public OggPlayer songPlayer;
-
-    long timeA;
-
+    Diff diff;
+    int eventMarker = 0;
     public boolean playing = false;
+    long time;
+    public boolean paused = false;
 
     public void load(String path){
         if(playing) return;
@@ -27,115 +27,71 @@ public class BeatmapPlayer {
             initiated = true;
             info = Parser.parseInfo(path);
             songPath = info.path + "\\" + info.songFileName;
+            songPlayer = new OggPlayer(songPath);
             Debug.log("Beatmap loaded, player ready");
         }else{
             Debug.log("Something went wrong ):");
         }
     }
 
-    Diff diff;
+    public void play(int difficulty){
+        if(!initiated) return;
 
-    public void play(int difficulty, long time){
-        if(initiated){
-            Debug.log("playing...");
-            stop();
-            playing = true;
-            songPlayer = new OggPlayer(songPath);
-            Utils.difficulty = difficulty;
-            DiffInfo diffInfo = info.diffs.get(difficulty);
-            diff = Parser.parseDiff(diffInfo.diffFileName,info.bpm);
-            songPlayer.play();
-            Utils.ledController.setEnvironment(info.environmentName);
-            Utils.ledController.setActive(true);
-            playEvents(diff,time);
-            Utils.ui.songList.startPlaying();
-            Debug.log("Playing Audioclip");
-        }else{
-            Debug.log("Beatmap Player is not ready");
-        }
+        songPlayer.play();
+        Utils.difficulty = difficulty;
+        DiffInfo diffInfo = info.diffs.get(difficulty);
+        diff = Parser.parseDiff(diffInfo.diffFileName,info.bpm);
+        Utils.ledController.setEnvironment(info.environmentName);
+        Utils.ledController.setActive(true);
+        eventMarker = 0;
+        playing = true;
+        Utils.ui.songList.startPlaying();
     }
-    private void playAtTime(long time){
-        //if(playing){
-            playEvents(diff,time);
-            songPlayer.setTime(time);
-            Utils.ui.songList.startPlaying();
-        //}else{
-            //play(Utils.difficulty,time);
-        //}
+    public void stop(){
+        Utils.ledController.setActive(false);
+        Utils.ui.songList.stopPlaying();
+        songPlayer.stopAudio();
+        playing = false;
     }
-    public boolean paused;
-    long timePaused;
+
+    long pauseTime;
     public void pause(){
-        if(!playing) return;
+        paused = !paused;
         if(paused){
-            setTime(timePaused);
-            paused = false;
+            pauseTime = songPlayer.getTime();
+            songPlayer.pause();
         }else{
-            timePaused = songPlayer.getTime();
-            stop();
-            paused = true;
+            songPlayer.setTime(pauseTime);
         }
     }
     public void setTime(long time){
         if(!playing) return;
         if(paused){
-            timePaused = time;
-        }else {
-            playAtTime(time);
-        }
-    }
-
-    public void stop(){
-        if(songPlayer == null) return;
-        playing = false;
-        songPlayer.stopAudio();
-        Utils.ledController.setActive(false);
-    }
-
-    public void stopBeatmap(){
-        stop();
-        Utils.ui.songList.stopPlaying();
-    }
-
-    public void playEvents(Diff diff,long startTime){
-        Date date = new Date();
-        timeA = date.getTime();
-        Debug.log("Playing LightEvents");
-        ArrayList<Event> events = new ArrayList<>(List.of(diff.events));
-        Event event;
-        if(events.size() == 0) {Debug.log("no events"); return;}
-        while(events.get(0).time < startTime){
-            events.remove(0);
-        }
-        nextEvent(events);
-    }
-
-    public TimerTask nextEventTask;
-
-    public void nextEvent(ArrayList<Event> events){
-        if(!this.songPlayer.isPlaying()){
+            pauseTime = time;
             return;
         }
-        if(events.size() > 0){
-            Event event = events.get(0);
-            events.remove(0);
-            Timer timer = new Timer();
-            long songTime = songPlayer.getTime();
-            long time = event.time - songTime;
+        songPlayer.setTime(time);
+        while(time > diff.events[eventMarker].time){
+            eventMarker++;
+        }
+        if(eventMarker == 0) return;
+        while(time < diff.events[eventMarker - 1].time){
+            eventMarker--;
+            if(eventMarker == 0) return;
+        }
+    }
 
-            nextEventTask = new TimerTask() {
-                public void run() {
-                    Utils.ledController.lightEvent(event);
-                    nextEvent(events);
-                    Thread.currentThread().interrupt();
-                }
-            };
-
-            timer.schedule(nextEventTask,  Math.max(0, time));
-        }else{
-            Debug.log("no events");
-            Utils.ledController.setActive(false);
-            playing = false;
+    public void update(){
+        //if(!songPlayer.isPlaying()) return;
+        if(!playing) return;
+        if(eventMarker >= diff.events.length){
+            stop();
+        }
+        time = songPlayer.getTime();
+        while(time > diff.events[eventMarker].time){
+            Event event = diff.events[eventMarker];
+            Utils.ledController.lightEvent(event);
+            eventMarker++;
         }
     }
 }

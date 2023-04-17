@@ -48,8 +48,6 @@ public class OggPlayer {
             outFormat = getOutFormat(in.getFormat());
             info = new Info(SourceDataLine.class, outFormat);
 
-            Debug.log(outFormat.properties());
-
             if(timeSet != 0){
                 bytesToSkip = (long)((timeSet / 1000.0) * outFormat.getFrameRate()) * outFormat.getFrameSize() + skippedBytesTotal;
             }

@@ -5,6 +5,8 @@ import Lighting.Components.ColorGradient;
 import Utils.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.util.ArrayList;
+
 public class Custom {
     public boolean lockPosition;
     public int direction = -1;

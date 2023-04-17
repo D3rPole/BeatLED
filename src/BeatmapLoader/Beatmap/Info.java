@@ -17,12 +17,15 @@ public class Info {
     public String songSubName;
     public String songAuthorName;
     public String levelAuthorName;
+
     public double bpm;
     public String songFileName;
     public String coverImageFileName;
     public String environmentName;
     public double songTimeOffset;
     public ArrayList<DiffInfo> diffs;
+
+    public Custom customInfo;
 
     @Override
     public String toString() {

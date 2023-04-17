@@ -1,5 +1,5 @@
 
-import BeatmapPlayer.BeatmapPlayerV2;
+import BeatmapPlayer.BeatmapPlayer;
 import Lighting.LEDController;
 import Utils.Utils;
 import Utils.Config;
@@ -11,7 +11,7 @@ public class Main {
         Config.load();
         FlatDarculaLaf.setup();
         Utils.ui = new UI.Main();
-        Utils.beatmapPlayer = new BeatmapPlayerV2();
+        Utils.beatmapPlayer = new BeatmapPlayer();
         Thread thread = new Thread(() -> {
             Utils.ledController = new LEDController();
             Utils.ledController.update();

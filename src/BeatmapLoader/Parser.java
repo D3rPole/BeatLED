@@ -6,6 +6,7 @@ import Utils.Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.formdev.flatlaf.json.Json;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -53,6 +54,34 @@ public class Parser {
                 diff.diffSubName = diffSubName;
                 diff.diffFileName = path + "\\" + diffs.get(j).get("_beatmapFilename").asText();
                 info.diffs.add(diff);
+
+                if(diffs.get(j).has("_customData")){
+                    JsonNode customData = diffs.get(j).get("_customData");
+                    if(customData.has("_warnings")){
+                        JsonNode node = customData.get("_warnings");
+                        for (int k = 0; k < node.size(); k++) {
+                            diff.warnings.add(node.get(k).asText());
+                        }
+                    }
+                    if(customData.has("_information")){
+                        JsonNode node = customData.get("_information");
+                        for (int k = 0; k < node.size(); k++) {
+                            diff.warnings.add(node.get(k).asText());
+                        }
+                    }
+                    if(customData.has("_suggestions")){
+                        JsonNode node = customData.get("_suggestions");
+                        for (int k = 0; k < node.size(); k++) {
+                            diff.warnings.add(node.get(k).asText());
+                        }
+                    }
+                    if(customData.has("_requirements")){
+                        JsonNode node = customData.get("_requirements");
+                        for (int k = 0; k < node.size(); k++) {
+                            diff.warnings.add(node.get(k).asText());
+                        }
+                    }
+                }
             }
         }
         return info;
