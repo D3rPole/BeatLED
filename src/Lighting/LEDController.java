@@ -10,8 +10,10 @@ import Lighting.Fixtures.SimpleLamp;
 import Utils.Config;
 import Utils.Debug;
 import Utils.Utils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import networking.Device;
-import org.json.JSONObject;
 
 import java.io.*;
 import java.util.concurrent.Executors;
@@ -45,25 +47,26 @@ public class LEDController {
     }
     public void setEnvironment(String environment){
         Debug.log("environment: " + environment);
-        JSONObject envJson = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode envJson = null;
         try (InputStream in = getClass().getResourceAsStream("/LightIDTables/" + environment + ".json");
             BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-            envJson = new JSONObject(reader.lines().collect(Collectors.joining()));
+            envJson = objectMapper.readTree(reader.lines().collect(Collectors.joining()));
         } catch (IOException e) {
             try (InputStream in = getClass().getResourceAsStream("/LightIDTables/DefaultEnvironment.json");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-                envJson = new JSONObject(reader.lines().collect(Collectors.joining()));
+                envJson = objectMapper.readTree(reader.lines().collect(Collectors.joining()));
             } catch (IOException ex) {
                 Debug.log(ex);
             }
         }
 
-        int fixtureCount = envJson.length();
+        int fixtureCount = envJson.size();
         fixtures = new Fixture[fixtureCount];
         for (int i = 0; i < fixtures.length; i++) {
-            JSONObject fixtureInfo = envJson.getJSONObject((1 + i) + "");
-            int lightCount = fixtureInfo.length() - 1;
-            String fixtureType = fixtureInfo.getString("type");
+            JsonNode fixtureInfo = envJson.get((1 + i) + "");
+            int lightCount = fixtureInfo.size() - 1;
+            String fixtureType = fixtureInfo.get("type").asText();
             switch (fixtureType){
                 case("lights_back"), ("lights_center"), ("ring_non_rotating") -> fixtures[i] = new SimpleLamp(lightCount);
                 case("lasers_left"), ("lasers_right") -> fixtures[i] = new LaserRotating(lightCount);

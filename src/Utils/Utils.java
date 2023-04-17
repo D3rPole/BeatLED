@@ -26,20 +26,6 @@ public class Utils {
     public static double BPM;
     public static int difficulty;
 
-    /*public static String readFile(File file) {
-        try {
-            Scanner scanner = new Scanner(file);
-            String str = "";
-            while (scanner.hasNext()){
-                str += scanner.next();
-            }
-            return str;
-        }catch(FileNotFoundException e){
-            Debug.log(e);
-        }
-        return "";
-    }*/
-
     public static String readFile(File file) {
         try {
             Scanner scanner = new Scanner(file);

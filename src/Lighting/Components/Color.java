@@ -1,7 +1,6 @@
 package Lighting.Components;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.json.JSONArray;
 
 public class Color {
     public int r = 0;
@@ -12,13 +11,6 @@ public class Color {
         this.r = clamp(0,255,r);
         this.g = clamp(0,255,g);
         this.b = clamp(0,255,b);
-    }
-    public Color(JSONArray color){
-        double a = 1;
-        if(color.length() > 3) a = color.getDouble(3);
-        r = (int)(color.getFloat(0) * a * 255);
-        g = (int)(color.getFloat(1) * a * 255);
-        b = (int)(color.getFloat(2) * a * 255);
     }
 
     public Color(JsonNode color){
