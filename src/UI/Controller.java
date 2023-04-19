@@ -1,6 +1,7 @@
 package UI;
 
 import BeatmapLoader.Beatmap.Event;
+import Lighting.Components.Color;
 import UI.Preview.Preview;
 import Utils.*;
 
@@ -33,6 +34,8 @@ public class Controller {
 
     private Preview preview;
 
+    private boolean chroma = false;
+
     Controller(){
         updatePreview();
 
@@ -49,6 +52,7 @@ public class Controller {
 
         manualControllCheckBox.addActionListener(e -> {
             Utils.setEnabledRecursive(manualControlPanel,manualControllCheckBox.isSelected());
+            chroma = false;
             if(manualControllCheckBox.isSelected() && !activeCheckBox.isSelected()){
                 activeCheckBox.doClick();
             }
@@ -57,6 +61,9 @@ public class Controller {
         sendCommandButton.addActionListener(e -> {
             BeatmapLoader.Beatmap.Event event = new Event();
             event.setValue((int)valueSpinner.getValue());
+            if(chroma) {
+                event.color = new Color((int) redSpinner.getValue(), (int) greenSpinner.getValue(), (int) blueSpinner.getValue());
+            }
             event.type = ((int)((Item)typeComboBox.getSelectedItem()).getObj());
             Utils.ledController.lightEvent(event);
             Debug.log(event);
@@ -92,6 +99,22 @@ public class Controller {
         strobeBrightnessSlider.addChangeListener(e -> strobeBrightnessSpinner.setValue(strobeBrightnessSlider.getValue()));
         strobeDutySlider.addChangeListener(e -> strobeDutySpinner.setValue(strobeDutySlider.getValue()));
         strobeFreqSlider.addChangeListener(e -> strobeFreqSpinner.setValue(strobeFreqSlider.getValue() / 4));
+
+        redSpinner.addChangeListener(e -> {
+            if((int)redSpinner.getValue() > 255) redSpinner.setValue(255);
+            if((int)redSpinner.getValue() < 0) redSpinner.setValue(0);
+            chroma = true;
+        });
+        blueSpinner.addChangeListener(e -> {
+            if((int)blueSpinner.getValue() > 255) blueSpinner.setValue(255);
+            if((int)blueSpinner.getValue() < 0) blueSpinner.setValue(0);
+            chroma = true;
+        });
+        greenSpinner.addChangeListener(e -> {
+            if((int)greenSpinner.getValue() > 255) greenSpinner.setValue(255);
+            if((int)greenSpinner.getValue() < 0) greenSpinner.setValue(0);
+            chroma = true;
+        });
 
         strobeBrightnessSpinner.addChangeListener(e -> {
             if((int)strobeBrightnessSpinner.getValue() > 100) strobeBrightnessSpinner.setValue(100);
