@@ -6,15 +6,20 @@ import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.prefs.Preferences;
+
+import static Utils.Utils.readFile;
 
 public class Config {
     public enum value{ OFF, ON, FLASH, FADEOUT, TRANSITION, OTHER }
@@ -35,39 +40,18 @@ public class Config {
     }
 
     public static void save(){
-        Debug.log("Saving config");
-        Preferences prefs = Preferences.userRoot().node("BeatLED\\Config");
-
-        prefs.put("beatmapFolderPath", beatmapFolder);
-        prefs.put("fadeoutTime", String.valueOf(fadeoutTime));
-        prefs.put("flashTime", String.valueOf(flashTime));
-        prefs.put("onBrightness", String.valueOf(onBrightness));
-        prefs.put("flashBrightness", String.valueOf(flashBrightness));
-
         ObjectMapper mapper = new ObjectMapper();
-        try {
-            String json = mapper.writeValueAsString(devices);
-            prefs.put("devices", json);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        ObjectNode node = mapper.createObjectNode();
 
-        saveJson();
-    }
-
-    public static void saveJson(){
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.createObjectNode();
-
-        ((ObjectNode)node).put("beatmapFolderPath",beatmapFolder);
-        ((ObjectNode)node).put("fadeoutTime", String.valueOf(fadeoutTime));
-        ((ObjectNode)node).put("flashTime", String.valueOf(flashTime));
-        ((ObjectNode)node).put("onBrightness", String.valueOf(onBrightness));
-        ((ObjectNode)node).put("flashBrightness", String.valueOf(flashBrightness));
+        node.put("beatmapFolderPath",beatmapFolder);
+        node.put("fadeoutTime", fadeoutTime);
+        node.put("flashTime", flashTime);
+        node.put("onBrightness", onBrightness);
+        node.put("flashBrightness", flashBrightness);
 
         try {
             String jsonStr = mapper.writeValueAsString(devices);
-            ((ObjectNode)node).put("devices", jsonStr);
+            node.put("devices", jsonStr);
 
             jsonStr = mapper.writeValueAsString(node);
 
@@ -88,24 +72,40 @@ public class Config {
         }
     }
 
-    public static void load(){
-        Debug.log("loading Config");
-        Preferences prefs = Preferences.userRoot().node("BeatLED\\Config");
-
-        beatmapFolder = prefs.get("beatmapFolderPath", "");
-        fadeoutTime = Integer.parseInt(prefs.get("fadeoutTime", "500"));
-        flashTime = Integer.parseInt(prefs.get("flashTime", "250"));
-        onBrightness = Integer.parseInt(prefs.get("onBrightness", "70"));
-        flashBrightness = Integer.parseInt(prefs.get("flashBrightness", "120"));
-
-        if(!new File(beatmapFolder).exists()){
-            chooseFolder();
+    private static Object getSetting(ObjectNode node, String fieldName, Object defaultValue){
+        if(node.has(fieldName)){
+            Debug.log(node.get(fieldName));
+            return node.get(fieldName);
         }
-        String json = prefs.get("devices", "");
+        node.putPOJO(fieldName,defaultValue);
+        return defaultValue;
+    }
+
+    public static void load(){
         try {
+            Debug.log("loading Config");
+            File file = new File(System.getenv("APPDATA") + "\\beatLED\\config.json");
+            if(!file.exists()){
+                chooseFolder();
+                return;
+            }
+            String jsonStr = Utils.readFile(file);
             ObjectMapper mapper = new ObjectMapper();
-            devices = mapper.readValue(json, new TypeReference<>() {
-            });
+            ObjectNode node = mapper.readValue(jsonStr, new TypeReference<>() {});
+
+            beatmapFolder = ((TextNode)getSetting(node,"beatmapFolderPath", "")).asText();
+            fadeoutTime = ((IntNode)getSetting(node,"fadeoutTime", fadeoutTime)).intValue();
+            flashTime = ((IntNode)getSetting(node,"flashTime", flashTime)).intValue();
+            onBrightness = ((IntNode)getSetting(node,"onBrightness", onBrightness)).intValue();
+            flashBrightness = ((IntNode)getSetting(node,"flashBrightness", flashBrightness)).intValue();
+
+
+            if(!new File(beatmapFolder).exists()){
+                chooseFolder();
+            }
+            jsonStr = ((TextNode)getSetting(node,"devices","")).asText();
+            devices = mapper.readValue(jsonStr, new TypeReference<>() {});
+
             for(DeviceLED device : devices){
                 Debug.log("    " + device);
                 try {

@@ -121,8 +121,12 @@ public class LEDController {
             if(strobing){
                 applyStrobe();
             }else{
-                Utils.beatmapPlayer.update();
-                applyBeatmapEvents();
+                try {
+                    Utils.beatmapPlayer.update();
+                    applyBeatmapEvents();
+                }catch(Exception e){
+                    throw e;
+                }
             }
             //send();
         }
