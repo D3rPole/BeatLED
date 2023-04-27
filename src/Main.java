@@ -3,13 +3,14 @@ import BeatmapPlayer.BeatmapPlayer;
 import Lighting.LEDController;
 import Utils.Utils;
 import Utils.Config;
+import Utils.Debug;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
 public class Main {
 
     public static void main(String[] args) {
-        Config.load();
         FlatDarculaLaf.setup();
+        Config.load();
         Utils.ui = new UI.Main();
         Utils.beatmapPlayer = new BeatmapPlayer();
         Thread thread = new Thread(() -> {
@@ -17,13 +18,5 @@ public class Main {
             Utils.ledController.update();
         });
         thread.start();
-
-        /*try {
-            Info info = Parser.parseInfo("C:\\Users\\ikawe\\Desktop\\LED controller\\bs maps\\Dubstep\\Basement Dwellers");
-            Debug.log(Parser.parseDiff(info.diffs.get(0).diffFileName,info.bpm));
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }*/
     }
 }

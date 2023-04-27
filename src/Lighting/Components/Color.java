@@ -29,7 +29,10 @@ public class Color {
     public Color brightness(int brightness){
         int overdrive = clamp(100,200,brightness) - 100;
         brightness = clamp(0,100,brightness);
-        return new Color(r * brightness / 100 + 255 * overdrive / 100,g * brightness / 100 + 255 * overdrive / 100,b * brightness / 100 + 255 * overdrive / 100);
+        int r = this.r * brightness / 100 + 255 * overdrive / 100;
+        int g = this.g * brightness / 100 + 255 * overdrive / 100;
+        int b = this.b * brightness / 100 + 255 * overdrive / 100;
+        return new Color(r,g,b);
     }
 
     int clamp(int min,int max,int value){
