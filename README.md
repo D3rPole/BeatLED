@@ -1,5 +1,4 @@
 # BeatLED
 Plays Beatmaps from Beatsaber on WLED devices.
 
-This project is WIP, no UI yet. Everything is hardcoded.
-At this point only version 2 Beatmaps supported, no version 3 yet.
+Probably abandonmened, will do it from scratch in another language when I feel like it :)
